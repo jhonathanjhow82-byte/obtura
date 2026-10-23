@@ -222,6 +222,24 @@ footer a{color:var(--branco);font-weight:500}
 .lite .btn-main::after,.lite .scroll-hint::after{animation:none;display:none}
 .still .hero .window{transform:none}
 </style>
+<!-- Meta Pixel (dataset 507503567409457) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','507503567409457');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=507503567409457&ev=PageView&noscript=1" alt=""></noscript>
+<!-- Microsoft Clarity: cole o ID do projeto em CLARITY_ID para ligar -->
+<script>
+(function(){var CLARITY_ID='';if(!CLARITY_ID)return;
+(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script",CLARITY_ID);})();
+</script>
 </head>
 <body>
 <div class="bg"><div class="grid"></div><div class="glow"></div><div class="vignette"></div></div>
@@ -364,6 +382,33 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     else { a.href = FALLBACK; a.target = '_blank'; a.rel = 'noopener';
       a.addEventListener('click', () => toast('Chama a gente no direct do @obturaapp que mandamos o acesso.')); }
   });
+
+  // rastreamento (Meta Pixel + Clarity)
+  const track = (ev, data, custom) => { try { window.fbq && fbq(custom ? 'trackCustom' : 'track', ev, data || {}); } catch(e){} };
+  const tag = (k, v) => { try { window.clarity && clarity('set', k, v); } catch(e){} };
+  const device = isMobile ? 'celular' : 'computador';
+  tag('dispositivo', device);
+  document.querySelectorAll('.dl a').forEach(a => a.addEventListener('click', () => {
+    const os = a.dataset.os;
+    track('Lead', {content_name: 'download_' + os, content_category: device});
+    track('Download', {os, dispositivo: device}, true);
+    tag('baixou', os);
+  }));
+  document.querySelectorAll('a[href="#baixar"]').forEach(a => a.addEventListener('click', () =>
+    track('ClicouBaixarTopo', {dispositivo: device}, true)));
+  document.querySelectorAll('a[href^="https://ig.me/"]').forEach(a => a.addEventListener('click', () =>
+    track('Contact', {content_name: 'suporte_direct'})));
+  let maxDepth = 0, sawPrices = false;
+  const dlBox = $('#baixar .dl');
+  const onScroll = () => {
+    const d = Math.round(100 * (scrollY + innerHeight) / document.documentElement.scrollHeight);
+    [25, 50, 75, 100].forEach(p => { if (d >= p && maxDepth < p) { maxDepth = p; track('Rolagem', {percentual: p}, true); } });
+    if (!sawPrices && dlBox) { const r = dlBox.getBoundingClientRect();
+      if (r.top < innerHeight * 0.85 && r.bottom > 0) { sawPrices = true;
+        track('ViewContent', {content_name: 'secao_baixar_precos', content_category: device}); tag('viu_precos', 'sim'); } }
+  };
+  addEventListener('scroll', onScroll, {passive:true});
+  setTimeout(onScroll, 1500);
 
   // revelar ao entrar na tela
   const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), {threshold:.2});
