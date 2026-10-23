@@ -104,7 +104,7 @@ nav.solid{background:rgba(10,10,12,.94);border-bottom:1px solid var(--linha)}
 .step.on{opacity:1;transform:none}
 .step .n{font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--cinza);font-variant-numeric:tabular-nums}
 .step h3{font-size:clamp(24px,2.6vw,34px);line-height:1.12;font-weight:600;letter-spacing:-.02em;margin-top:4px}
-.step p{color:var(--cinza);margin-top:8px;max-height:0;overflow:hidden;opacity:0;transition:max-height .5s,opacity .5s}
+.step p{color:var(--cinza);margin-top:8px;max-height:0;overflow:hidden;opacity:0;transition:opacity .5s}
 .step.on p{max-height:140px;opacity:1}
 .stage{position:relative}
 .stage .window{width:100%;position:relative}
@@ -441,7 +441,7 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     G = { vh: innerHeight, max: Math.max(1, document.documentElement.scrollHeight - innerHeight), mob: innerWidth < 860,
           hero: sec(hero), feat: sec(feat), ba: sec(ba), lift: heroTxt.offsetHeight, sw: sh.offsetWidth, shh: sh.offsetHeight, cw: cmp.offsetWidth };
     shots.forEach((im,k)=>{
-      const F = FOCUS[k], sc = F[2], w = G.sw, hh = G.shh, mx = (sc-1)*w/2, my = (sc-1)*hh/2;
+      const F = FOCUS[k], sc = G.mob ? 1 + (F[2]-1)*0.7 : F[2], w = G.sw, hh = G.shh, mx = (sc-1)*w/2, my = (sc-1)*hh/2;
       im.style.setProperty('--zx', clamp((0.5-F[0])*w*sc, -mx, mx).toFixed(1)+'px');
       im.style.setProperty('--zy', clamp((0.5-F[1])*hh*sc, -my, my).toFixed(1)+'px');
       im.style.setProperty('--zs', sc);
