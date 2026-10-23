@@ -228,7 +228,8 @@ footer a{color:var(--branco);font-weight:500}
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+t.src=v;s=b.getElementsByTagName(e)[0];var go=function(){s.parentNode.insertBefore(t,s)};
+if(document.readyState==='complete')go();else f.addEventListener('load',function(){setTimeout(go,0)})}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','507503567409457');
 fbq('track','PageView');
@@ -290,9 +291,9 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document
         <div class="chrome"><i></i><i></i><i></i></div>
         <div class="shots" id="shots">
           <img class="on" src="img/ui_dialog-900.webp" srcset="img/ui_dialog-900.webp 900w, img/ui_dialog-1600.webp 1600w, img/ui_dialog-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Obtura perguntando se deve selecionar as melhores fotos" decoding="async">
-          <img src="img/ui_remove-900.webp" srcset="img/ui_remove-900.webp 900w, img/ui_remove-1600.webp 1600w, img/ui_remove-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Ferramenta Remover com IA do Obtura" decoding="async">
-          <img src="img/ui_develop-900.webp" srcset="img/ui_develop-900.webp 900w, img/ui_develop-1600.webp 1600w, img/ui_develop-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Painel de revelação RAW do Obtura" decoding="async">
-          <img src="img/ui_library-900.webp" srcset="img/ui_library-900.webp 900w, img/ui_library-1600.webp 1600w, img/ui_library-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Biblioteca do Obtura" decoding="async">
+          <img src="img/ui_remove-900.webp" srcset="img/ui_remove-900.webp 900w, img/ui_remove-1600.webp 1600w, img/ui_remove-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Ferramenta Remover com IA do Obtura" loading="lazy" decoding="async">
+          <img src="img/ui_develop-900.webp" srcset="img/ui_develop-900.webp 900w, img/ui_develop-1600.webp 1600w, img/ui_develop-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Painel de revelação RAW do Obtura" loading="lazy" decoding="async">
+          <img src="img/ui_library-900.webp" srcset="img/ui_library-900.webp 900w, img/ui_library-1600.webp 1600w, img/ui_library-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Biblioteca do Obtura" loading="lazy" decoding="async">
           <div class="offline" id="offline"><div>
             <svg viewBox="0 0 24 24" fill="none" stroke="url(#gr)" stroke-width="1.8" stroke-linecap="round"><defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#6E28DC"/><stop offset=".5" stop-color="#EB3C8C"/><stop offset="1" stop-color="#FFCD5A"/></linearGradient></defs><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 5.2-2.8M19 13a10 10 0 0 0-2.4-1.8M2 8.8a15 15 0 0 1 4.3-2.6M22 8.8A15 15 0 0 0 11 5M12 20h.01"/></svg>
             <strong>Sem internet. Sem problema.</strong><span>Tudo roda no seu computador</span></div></div>
@@ -500,8 +501,9 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   addEventListener('load', () => { measure(); req(); });
   if (document.fonts) document.fonts.ready.then(() => { measure(); req(); });
   measure(); frame();
-  const warm = () => shots.forEach(im => im.decode && im.decode().catch(()=>{}));
-  (window.requestIdleCallback || setTimeout)(warm, 1200);
+  // depois que a página abriu: baixa e decodifica as telas, para a troca não travar ao rolar
+  const warm = () => shots.forEach(im => { im.loading = 'eager'; im.decode && im.decode().catch(()=>{}); });
+  addEventListener('load', () => (window.requestIdleCallback || setTimeout)(warm, 600));
 })();
 </script>
 </body>
