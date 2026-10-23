@@ -42,9 +42,9 @@ a{color:inherit;text-decoration:none}
   background-size:56px 56px;
   -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 10%,transparent 75%);
           mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 10%,transparent 75%);
-  opacity:.55;will-change:transform}
+  opacity:.55}
 /* brilho: degradês radiais já suaves (sem filter:blur, que custa muito no celular) */
-.glow{position:absolute;inset:-30% -40%;opacity:.5;will-change:transform;
+.glow{position:absolute;inset:-30% -40%;opacity:.5;
   background:radial-gradient(closest-side at 30% 35%,rgba(110,40,220,.55),transparent),
              radial-gradient(closest-side at 70% 30%,rgba(235,60,140,.40),transparent),
              radial-gradient(closest-side at 55% 70%,rgba(255,130,60,.28),transparent)}
@@ -52,7 +52,7 @@ a{color:inherit;text-decoration:none}
 
 /* barra de progresso no topo */
 .bar{position:fixed;top:0;left:0;height:2px;width:100%;z-index:60;background:var(--grad);
-  transform-origin:0 50%;transform:scaleX(0);will-change:transform}
+  transform:translate3d(-100%,0,0);will-change:transform}
 
 /* topo */
 nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
@@ -99,7 +99,7 @@ nav.solid{background:rgba(10,10,12,.94);border-bottom:1px solid var(--linha)}
   align-items:center;gap:56px;padding:80px max(24px,5vw) 40px;max-width:1440px;margin:0 auto}
 .steps{position:relative;padding-left:26px}
 .rail{position:absolute;left:0;top:6px;bottom:6px;width:2px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
-.rail b{position:absolute;inset:0;background:linear-gradient(var(--roxo),var(--rosa),var(--laranja),var(--dourado));transform-origin:top;transform:scaleY(0)}
+.rail b{position:absolute;inset:0;background:linear-gradient(var(--roxo),var(--rosa),var(--laranja),var(--dourado));transform:translate3d(0,-100%,0);will-change:transform}
 .step{padding:16px 0;opacity:.28;transition:opacity .45s,transform .45s;transform:translateX(-6px)}
 .step.on{opacity:1;transform:none}
 .step .n{font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--cinza);font-variant-numeric:tabular-nums}
@@ -110,16 +110,17 @@ nav.solid{background:rgba(10,10,12,.94);border-bottom:1px solid var(--linha)}
 .stage .window{width:100%;position:relative}
 .shots{position:relative;aspect-ratio:3024/1760;background:#000}
 .shots{overflow:hidden}
-.shots img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;transform-origin:50% 50%}
-.shots img.on{will-change:transform}
+.shots img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform-origin:50% 50%;will-change:transform,opacity;
+  transform:translate3d(0,0,0) scale(1);transition:opacity .6s,transform 1.4s cubic-bezier(.22,.7,.2,1)}
+.shots img.zoom{transform:translate3d(var(--zx,0),var(--zy,0),0) scale(var(--zs,1))}
 .shots img.on{opacity:1}
-.chip{position:absolute;z-index:3;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;font-size:14px;font-weight:600;
+.chip{position:absolute;z-index:3;will-change:transform,opacity;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;font-size:14px;font-weight:600;
   background:rgba(14,14,18,.92);border:1px solid rgba(255,255,255,.14);
   opacity:0;transform:translateY(10px) scale(.96);transition:opacity .45s,transform .45s}
 .chip.on{opacity:1;transform:none}
 .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--grad)}
 .chip.c0{left:4%;top:8%}.chip.c1{right:4%;top:8%}.chip.c2{left:4%;bottom:8%}.chip.c3{right:4%;bottom:8%}
-.offline{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:rgba(10,10,12,.55);opacity:0;transition:opacity .6s}
+.offline{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:rgba(10,10,12,.55);opacity:0;transition:opacity .6s;will-change:opacity}
 .offline.on{opacity:1}
 .offline div{text-align:center;padding:22px 30px;border-radius:18px;background:rgba(20,20,26,.85);border:1px solid rgba(255,255,255,.14)}
 .offline svg{width:44px;height:44px;margin:0 auto 10px}
@@ -288,10 +289,10 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document
       <div class="window">
         <div class="chrome"><i></i><i></i><i></i></div>
         <div class="shots" id="shots">
-          <img class="on" src="img/ui_dialog-900.webp" srcset="img/ui_dialog-900.webp 900w, img/ui_dialog-1600.webp 1600w, img/ui_dialog-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Obtura perguntando se deve selecionar as melhores fotos" loading="lazy" decoding="async">
-          <img src="img/ui_remove-900.webp" srcset="img/ui_remove-900.webp 900w, img/ui_remove-1600.webp 1600w, img/ui_remove-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Ferramenta Remover com IA do Obtura" loading="lazy" decoding="async">
-          <img src="img/ui_develop-900.webp" srcset="img/ui_develop-900.webp 900w, img/ui_develop-1600.webp 1600w, img/ui_develop-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Painel de revelação RAW do Obtura" loading="lazy" decoding="async">
-          <img src="img/ui_library-900.webp" srcset="img/ui_library-900.webp 900w, img/ui_library-1600.webp 1600w, img/ui_library-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Biblioteca do Obtura" loading="lazy" decoding="async">
+          <img class="on" src="img/ui_dialog-900.webp" srcset="img/ui_dialog-900.webp 900w, img/ui_dialog-1600.webp 1600w, img/ui_dialog-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Obtura perguntando se deve selecionar as melhores fotos" decoding="async">
+          <img src="img/ui_remove-900.webp" srcset="img/ui_remove-900.webp 900w, img/ui_remove-1600.webp 1600w, img/ui_remove-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Ferramenta Remover com IA do Obtura" decoding="async">
+          <img src="img/ui_develop-900.webp" srcset="img/ui_develop-900.webp 900w, img/ui_develop-1600.webp 1600w, img/ui_develop-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Painel de revelação RAW do Obtura" decoding="async">
+          <img src="img/ui_library-900.webp" srcset="img/ui_library-900.webp 900w, img/ui_library-1600.webp 1600w, img/ui_library-2400.webp 2400w" sizes="(max-width:860px) 92vw, 60vw" alt="Biblioteca do Obtura" decoding="async">
           <div class="offline" id="offline"><div>
             <svg viewBox="0 0 24 24" fill="none" stroke="url(#gr)" stroke-width="1.8" stroke-linecap="round"><defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#6E28DC"/><stop offset=".5" stop-color="#EB3C8C"/><stop offset="1" stop-color="#FFCD5A"/></linearGradient></defs><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 5.2-2.8M19 13a10 10 0 0 0-2.4-1.8M2 8.8a15 15 0 0 1 4.3-2.6M22 8.8A15 15 0 0 0 11 5M12 20h.01"/></svg>
             <strong>Sem internet. Sem problema.</strong><span>Tudo roda no seu computador</span></div></div>
@@ -435,6 +436,12 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     const sh = document.getElementById('shots');
     G = { vh: innerHeight, max: Math.max(1, document.documentElement.scrollHeight - innerHeight), mob: innerWidth < 860,
           hero: sec(hero), feat: sec(feat), ba: sec(ba), lift: heroTxt.offsetHeight, sw: sh.offsetWidth, shh: sh.offsetHeight, cw: cmp.offsetWidth };
+    shots.forEach((im,k)=>{
+      const F = FOCUS[k], sc = F[2], w = G.sw, hh = G.shh, mx = (sc-1)*w/2, my = (sc-1)*hh/2;
+      im.style.setProperty('--zx', clamp((0.5-F[0])*w*sc, -mx, mx).toFixed(1)+'px');
+      im.style.setProperty('--zy', clamp((0.5-F[1])*hh*sc, -my, my).toFixed(1)+'px');
+      im.style.setProperty('--zs', sc);
+    });
   }
   const prog = s => clamp((scrollY - s.top) / s.span);
   const last = new Map();
@@ -444,12 +451,8 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   function frame(){
     ticking=false;
     const y = scrollY, P = y / G.max;
-    set(bar, 'transform', `scaleX(${P.toFixed(4)})`);
+    set(bar, 'transform', `translate3d(${((P-1)*100).toFixed(2)}%,0,0)`);
     nav.classList.toggle('solid', y > 30);
-    if (!lite){
-      set(grid, 'transform', `translate3d(0,${(-P*220).toFixed(1)}px,0)`);
-      set(glow, 'transform', `translate3d(0,${(-P*160).toFixed(1)}px,0) rotate(${(P*140).toFixed(2)}deg)`);
-    }
 
     // 1. hero: texto sobe e some, janela do app deita -> fica de frente e cresce
     const h = prog(G.hero), e = ease(clamp(h/0.75)), mob = G.mob;
@@ -458,12 +461,12 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     if (!still){
       set(heroTxt, 'transform', `translate3d(0,${(-e*(mob?160:220)).toFixed(1)}px,0) scale(${(1-e*.08).toFixed(4)})`);
       const tilt = lite ? '' : ` rotateX(${((1-e)*28).toFixed(2)}deg)`;
-      set(heroWin, 'transform', `translate3d(0,${(-e*(G.lift+(mob?34:44))*0.92).toFixed(1)}px,0)${tilt} scale(${((mob?.92:.82)+e*(mob?.1:.18)).toFixed(4)})`);
+      set(heroWin, 'transform', `translate3d(0,${(-e*(G.lift+(mob?34:44))*0.92).toFixed(1)}px,0)${tilt}`);
     }
 
     // 2. recursos: cada trecho do scroll mostra um recurso
     const f = prog(G.feat);
-    set(railFill, 'transform', `scaleY(${f.toFixed(3)})`);
+    set(railFill, 'transform', `translate3d(0,${((f-1)*100).toFixed(2)}%,0)`);
     const i = Math.min(3, Math.floor(f*4));
     if (i !== cur){
       cur = i;
@@ -474,13 +477,8 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     // a câmera dá zoom no ponto de cada recurso conforme rola (e volta no fim do trecho)
     const local = clamp(f*4 - i);
     if (!still){
-      if (zoomed !== i && zoomed >= 0) set(shots[zoomed], 'transform', 'none');
-      zoomed = i;
-      const z = ease(clamp((local-.08)/.5)) * (1 - ease(clamp((local-.9)/.1)) * (i<3 ? 1 : 0));
-      const F = FOCUS[i], sc = 1 + (F[2]-1) * z, w = G.sw, hh = G.shh;
-      const mx = (sc-1)*w/2, my = (sc-1)*hh/2;
-      const tx = clamp((0.5-F[0])*w*sc, -mx, mx), ty = clamp((0.5-F[1])*hh*sc, -my, my);
-      set(shots[i], 'transform', `translate3d(${tx.toFixed(1)}px,${ty.toFixed(1)}px,0) scale(${sc.toFixed(4)})`);
+      const zi = (local > .12 && (i === 3 || local < .86)) ? i : -1;
+      if (zi !== zoomed){ shots.forEach((im,k)=>im.classList.toggle('zoom', k===zi)); zoomed = zi; }
     }
     // os selos da escolha aparecem um a um dentro do 1º trecho
     chips.forEach((c,k)=>c.classList.toggle('on', i===0 && local > .45 + k*.1 && local < .92));
@@ -499,6 +497,8 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   addEventListener('load', () => { measure(); req(); });
   if (document.fonts) document.fonts.ready.then(() => { measure(); req(); });
   measure(); frame();
+  const warm = () => shots.forEach(im => im.decode && im.decode().catch(()=>{}));
+  (window.requestIdleCallback || setTimeout)(warm, 1200);
 })();
 </script>
 </body>
