@@ -399,15 +399,18 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     track('ClicouBaixarTopo', {dispositivo: device}, true)));
   document.querySelectorAll('a[href^="https://ig.me/"]').forEach(a => a.addEventListener('click', () =>
     track('Contact', {content_name: 'suporte_direct'})));
-  let maxDepth = 0, sawPrices = false;
+  let maxDepth = 0, sawPrices = false, docH = 0;
   const dlBox = $('#baixar .dl');
+  // altura da página lida só no load/resize: ler layout a cada evento de scroll trava o Safari
+  const readH = () => { docH = document.documentElement.scrollHeight; };
+  addEventListener('load', readH); addEventListener('resize', readH, {passive:true}); readH();
   const onScroll = () => {
-    const d = Math.round(100 * (scrollY + innerHeight) / document.documentElement.scrollHeight);
+    const d = Math.round(100 * (scrollY + innerHeight) / docH);
     [25, 50, 75, 100].forEach(p => { if (d >= p && maxDepth < p) { maxDepth = p; track('Rolagem', {percentual: p}, true); } });
-    if (!sawPrices && dlBox) { const r = dlBox.getBoundingClientRect();
-      if (r.top < innerHeight * 0.85 && r.bottom > 0) { sawPrices = true;
-        track('ViewContent', {content_name: 'secao_baixar_precos', content_category: device}); tag('viu_precos', 'sim'); } }
   };
+  if (dlBox) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting && !sawPrices) { sawPrices = true; o.disconnect();
+    track('ViewContent', {content_name: 'secao_baixar_precos', content_category: device}); tag('viu_precos', 'sim'); } }),
+    {rootMargin: '0px 0px -15% 0px'}).observe(dlBox);
   addEventListener('scroll', onScroll, {passive:true});
   setTimeout(onScroll, 1500);
 
