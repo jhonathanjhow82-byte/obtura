@@ -320,12 +320,12 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
     <div class="ba-txt rv">
       <div class="eyebrow g">Remover com IA</div>
       <h2>Um clique<br>e <span class="g">sumiu.</span></h2>
-      <p>O ar-condicionado atrás da noiva? Um clique e a IA apaga e refaz a parede.</p>
+      <p id="baTxt">O videomaker no fundo da foto do noivo? Um clique e a IA apaga e refaz o fundo.</p>
     </div>
     <div class="compare" id="compare">
-      <img src="img/ac_antes.webp" alt="Antes: noiva no espelho com um ar-condicionado na parede" loading="lazy" decoding="async">
-      <div class="win wm" id="wm"><img src="img/ac_mascara.png" alt="" loading="lazy" decoding="async"></div>
-      <div class="win wa" id="wa"><img src="img/ac_depois.webp" alt="Depois: o ar-condicionado foi removido pela IA" loading="lazy" decoding="async"></div>
+      <img id="exA" src="img/vm_antes.webp" alt="Antes: noivo no altar com um videomaker no fundo" loading="lazy" decoding="async">
+      <div class="win wm" id="wm"><img id="exM" src="img/vm_mascara.webp" alt="" loading="lazy" decoding="async"></div>
+      <div class="win wa" id="wa"><img id="exD" src="img/vm_depois.webp" alt="Depois: o videomaker foi removido pela IA" loading="lazy" decoding="async"></div>
       <span class="tap"></span>
       <span class="tag a">ANTES</span><span class="tag d">DEPOIS</span><span class="tapmsg">Toque para ver antes e depois</span>
       <div class="lw"><div class="line"></div></div>
@@ -572,6 +572,16 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
 
   // tocar na foto alterna antes/depois (as pessoas tocavam e nada acontecia)
   cmp.addEventListener('click', () => { cmp.classList.add('done'); cmp.classList.toggle('go'); tag('antes_depois','toque'); });
+  // exemplos reais que se alternam: o videomaker primeiro, depois o ar-condicionado
+  const EX = [
+    {a:'img/vm_antes.webp', m:'img/vm_mascara.webp', d:'img/vm_depois.webp', t:'O videomaker no fundo da foto do noivo? Um clique e a IA apaga e refaz o fundo.'},
+    {a:'img/ac_antes.webp', m:'img/ac_mascara.png', d:'img/ac_depois.webp', t:'O ar-condicionado atrás da noiva? Um clique e a IA apaga e refaz a parede.'}];
+  let exI = 0, exT = null, touched = false;
+  const showEx = k => { const e = EX[k]; cmp.classList.remove('go','done'); $('#exA').src = e.a; $('#exM').src = e.m; $('#exD').src = e.d; $('#baTxt').textContent = e.t;
+    setTimeout(() => { cmp.classList.add('go'); clearTimeout(cmp._t); cmp._t = setTimeout(() => cmp.classList.add('done'), 2400); }, 450); };
+  addEventListener('load', () => setTimeout(() => EX.forEach(e => [e.a, e.m, e.d].forEach(u => { const i = new Image(); i.src = u; })), 1500));
+  exT = setInterval(() => { if (!touched && cmp.classList.contains('done') && cmp.getBoundingClientRect().top < innerHeight) { exI = (exI + 1) % EX.length; showEx(exI); } }, 5500);
+  cmp.addEventListener('pointerdown', () => { touched = true; setTimeout(() => touched = false, 8000); });
   heroWin.addEventListener('click', () => ba.scrollIntoView({behavior:'smooth'}));
 
   // medidas lidas só quando a tela muda de tamanho (ler layout a cada quadro trava o scroll)
