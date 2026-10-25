@@ -222,7 +222,7 @@ footer a{color:var(--branco);font-weight:500}
 .hero-txt>*:nth-child(2){animation-delay:.12s}.hero-txt>*:nth-child(3){animation-delay:.24s}
 .hero-txt>*:nth-child(4){animation-delay:.36s}.hero-txt>*:nth-child(5){animation-delay:.48s}
 #heroWin img{animation:rise 1.2s .5s cubic-bezier(.2,.7,.2,1) both}
-@keyframes rise{from{opacity:0;transform:translateY(34px)}}
+@keyframes rise{from{opacity:.01;transform:translateY(34px)}}
 .btn-main{overflow:hidden;isolation:isolate}
 .btn-main::after{content:"";position:absolute;top:0;bottom:0;left:0;width:45%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.42),transparent);
   transform:translateX(-120%);animation:sweep 3.2s ease-in-out infinite}
@@ -254,6 +254,10 @@ footer a{color:var(--branco);font-weight:500}
   .cta .logo{width:96px;height:96px}
 }
 @media (max-height:700px) and (max-width:860px){ .compare{width:min(260px,62vw)} .ba-txt .eyebrow{display:none} }
+.compare,#heroWin{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.compare .tapmsg{position:absolute;left:50%;top:14px;transform:translateX(-50%);font-size:12px;font-weight:600;padding:6px 12px;border-radius:99px;background:rgba(0,0,0,.6);color:#fff;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .4s}
+.compare.done .tapmsg{opacity:1}
+@media (max-width:860px){ .hero{height:150vh} .ba{height:130vh} .hero-txt>*,#heroWin img{animation:none} }
 @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
 .lite .glow{opacity:.35}
 .lite .btn-main::after,.lite .scroll-hint::after{animation:none;display:none}
@@ -298,9 +302,9 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
       <h1>De fotógrafos,<br>para <span class="g">fotógrafos.</span></h1>
       <p class="sub">O editor que escolhe as melhores fotos do casamento e apaga o que atrapalha. Menos noites editando.</p>
       <div class="ctas">
-        <a class="btn btn-main" href="#baixar">Baixar teste GRÁTIS</a>
+        <a class="btn btn-main" href="#baixar">Testar 14 dias GRÁTIS</a>
       </div>
-      <div class="fine">14 dias GRÁTIS · sem cartão de crédito</div>
+      <div class="fine">Sem cartão de crédito · Mac e Windows · depois R$ 29,90/mês</div>
     </div>
     <div class="window" id="heroWin">
       <div class="chrome"><i></i><i></i><i></i></div>
@@ -310,7 +314,26 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
   </div>
 </section>
 
-<!-- 2. RECURSOS -->
+<!-- 2. ANTES / DEPOIS -->
+<section class="ba" id="ba">
+  <div class="stick">
+    <div class="ba-txt rv">
+      <div class="eyebrow g">Remover com IA</div>
+      <h2>Um clique<br>e <span class="g">sumiu.</span></h2>
+      <p>O ar-condicionado atrás da noiva? Um clique e a IA apaga e refaz a parede.</p>
+    </div>
+    <div class="compare" id="compare">
+      <img src="img/ac_antes.webp" alt="Antes: noiva no espelho com um ar-condicionado na parede" loading="lazy" decoding="async">
+      <div class="win wm" id="wm"><img src="img/ac_mascara.png" alt="" loading="lazy" decoding="async"></div>
+      <div class="win wa" id="wa"><img src="img/ac_depois.webp" alt="Depois: o ar-condicionado foi removido pela IA" loading="lazy" decoding="async"></div>
+      <span class="tap"></span>
+      <span class="tag a">ANTES</span><span class="tag d">DEPOIS</span><span class="tapmsg">Toque para ver antes e depois</span>
+      <div class="lw"><div class="line"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. RECURSOS -->
 <section class="feat" id="feat">
   <div class="stick">
     <div class="steps" id="steps">
@@ -341,25 +364,6 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
       <div class="chip c1"><span class="dot"></span>Repetidas: 12</div>
       <div class="chip c2"><span class="dot"></span>Desfocadas: 5</div>
       <div class="chip c3"><span class="dot"></span>Você revisa</div>
-    </div>
-  </div>
-</section>
-
-<!-- 3. ANTES / DEPOIS -->
-<section class="ba" id="ba">
-  <div class="stick">
-    <div class="ba-txt rv">
-      <div class="eyebrow g">Remover com IA</div>
-      <h2>Um clique<br>e <span class="g">sumiu.</span></h2>
-      <p>O ar-condicionado atrás da noiva? Um clique e a IA apaga e refaz a parede.</p>
-    </div>
-    <div class="compare" id="compare">
-      <img src="img/ac_antes.webp" alt="Antes: noiva no espelho com um ar-condicionado na parede" loading="lazy" decoding="async">
-      <div class="win wm" id="wm"><img src="img/ac_mascara.png" alt="" loading="lazy" decoding="async"></div>
-      <div class="win wa" id="wa"><img src="img/ac_depois.webp" alt="Depois: o ar-condicionado foi removido pela IA" loading="lazy" decoding="async"></div>
-      <span class="tap"></span>
-      <span class="tag a">ANTES</span><span class="tag d">DEPOIS</span>
-      <div class="lw"><div class="line"></div></div>
     </div>
   </div>
 </section>
@@ -486,7 +490,7 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   if (isMobile) {
     const n = document.querySelector('.note'); if (n) n.textContent = 'Está no celular? Toque em Mac ou Windows e mande o link para abrir no computador.';
     document.querySelectorAll('.dl small').forEach(x => x.textContent = 'Enviar link para');
-    document.querySelectorAll('a.btn-main[href="#baixar"]').forEach(a => a.textContent = 'Enviar link para o computador');
+    document.querySelectorAll('a.btn-main[href="#baixar"]').forEach(a => a.textContent = 'Testar 14 dias GRÁTIS');
   }
   document.querySelectorAll('.dl a').forEach(a => {
     if (isMobile) a.addEventListener('click', e => { e.preventDefault(); openSheet(a.dataset.os); });
@@ -566,6 +570,10 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     else if (!e.isIntersecting) { cmp.classList.remove('go','done'); clearTimeout(cmp._t); }
   }), {threshold:[0,.55,.8]}).observe(cmp);
 
+  // tocar na foto alterna antes/depois (as pessoas tocavam e nada acontecia)
+  cmp.addEventListener('click', () => { cmp.classList.add('done'); cmp.classList.toggle('go'); tag('antes_depois','toque'); });
+  heroWin.addEventListener('click', () => ba.scrollIntoView({behavior:'smooth'}));
+
   // medidas lidas só quando a tela muda de tamanho (ler layout a cada quadro trava o scroll)
   let G = {};
   function measure(){
@@ -629,7 +637,7 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   measure(); frame();
   // depois que a página abriu: baixa e decodifica as telas, para a troca não travar ao rolar
   const warm = () => [...shots, ...cmp.querySelectorAll('img')].forEach(im => { im.loading = 'eager'; im.decode && im.decode().catch(()=>{}); });
-  addEventListener('load', () => window.requestIdleCallback ? requestIdleCallback(warm, {timeout:1500}) : setTimeout(warm, 600));
+  addEventListener('load', () => { try { requestIdleCallback(() => warm(), {timeout:1500}); } catch (_) { setTimeout(warm, 600); } });
 })();
 </script>
 </body>
