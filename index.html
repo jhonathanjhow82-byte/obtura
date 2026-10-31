@@ -213,6 +213,12 @@ footer a{color:var(--branco);font-weight:500}
 .seg button.sel{background:var(--branco);color:var(--preto)}
 .seg button.sel svg{fill:var(--preto)}
 .sheet-acts{display:grid;gap:10px}
+.sheet-mail{display:grid;gap:10px;margin-bottom:14px}
+.sheet-mail input{font:inherit;font-size:16px;color:var(--branco);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;padding:14px 16px;width:100%;outline:none}
+.sheet-mail input:focus{border-color:#EB3C8C}
+.sheet-mail small{color:var(--cinza);font-size:12px;line-height:1.4}
+.sheet-or{color:var(--cinza);font-size:13px;margin:4px 0 10px}
 .sheet-acts .btn{width:100%;font-size:16px;padding:14px}
 .sheet-x{margin-top:12px;background:none;border:0;color:var(--cinza);font:inherit;font-size:15px;padding:8px 16px;cursor:pointer}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;z-index:80;background:#1E1E24;border:1px solid rgba(255,255,255,.16);
@@ -428,9 +434,15 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
       <button type="button" role="radio" data-os="mac"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.2 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Mac</button>
       <button type="button" role="radio" data-os="windows"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.1l7.4-1v7.1H3V5.1zm0 13.8l7.4 1v-7H3v6zm8.2 1.1L21 21.4V12.9h-9.8v7.1zm0-16.1v7.3H21V2.6l-9.8 1.3z"/></svg>Windows</button>
     </div>
+    <form class="sheet-mail" id="shForm" novalidate>
+      <input type="email" id="shEmail" inputmode="email" autocomplete="email" placeholder="Seu e-mail" aria-label="Seu e-mail" required>
+      <button type="submit" class="btn btn-main" id="shSend">Mandar o link para meu e-mail</button>
+      <small>Você recebe o link para baixar no computador. Usamos o e-mail só para isso e para avisos do teste grátis (<a href="privacidade/">privacidade</a>).</small>
+    </form>
+    <div class="sheet-or">ou</div>
     <div class="sheet-acts">
-      <a class="btn btn-main" id="shWa" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
-      <a class="btn btn-ghost" id="shMail" href="#">Enviar por e-mail</a>
+      <a class="btn btn-ghost" id="shWa" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+      <a class="btn btn-ghost" id="shMail" href="#" style="display:none">Enviar por e-mail</a>
       <button type="button" class="btn btn-ghost" id="shCopy">Copiar link</button>
       <button type="button" class="btn btn-ghost" id="shMore" hidden>Outras opções</button>
     </div>
@@ -479,6 +491,23 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   sheet.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeSheet));
   addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
   $('#shWa').addEventListener('click', () => sent('whatsapp'));
+  const LEAD_URL = 'https://oqclsemdwzpsdyjbfxyh.supabase.co/functions/v1/lead';
+  $('#shForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = $('#shEmail').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { toast('Confira o e-mail.'); $('#shEmail').focus(); return; }
+    const btn = $('#shSend'); btn.disabled = true; btn.textContent = 'Enviando…';
+    let ok = false;
+    try {
+      const r = await fetch(LEAD_URL, {method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, os: sheetOs, ref: (typeof REF === 'string' && REF) || undefined})});
+      ok = r.ok && (await r.json()).sent === true;
+    } catch(_) {}
+    btn.disabled = false; btn.textContent = 'Mandar o link para meu e-mail';
+    sent('email_digitado');
+    if (ok) { toast('Pronto! Abra o e-mail no computador para baixar o Obtura.'); closeSheet(); }
+    else location.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(`Obtura para ${NOMES[sheetOs]}`) + '&body=' + encodeURIComponent(linkText(sheetOs));
+  });
   $('#shMail').addEventListener('click', () => sent('email'));
   $('#shCopy').addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(linkText(sheetOs)); toast('Link copiado. Cole no WhatsApp, e-mail ou notas e abra no computador.'); sent('copiar'); }
@@ -506,6 +535,8 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   tag('dispositivo', device);
   document.querySelectorAll('.dl a').forEach(a => a.addEventListener('click', () => {
     const os = a.dataset.os;
+    // (no celular o toque só abre a escolha de como mandar o link: não é um download)
+    if (isMobile) { track('AbriuEnvioCelular', {os}, true); tag('abriu_envio', os); return; }
     track('Lead', {content_name: 'download_' + os, content_category: device});
     track('Download', {os, dispositivo: device}, true);
     tag('baixou', os);
