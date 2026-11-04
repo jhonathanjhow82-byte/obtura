@@ -162,6 +162,13 @@ nav.solid{background:rgba(10,10,12,.94);border-bottom:1px solid var(--linha)}
 .hero h1{font-size:clamp(40px,8.2vw,96px);line-height:1.02;font-weight:700;letter-spacing:-.035em}
 .hero p.sub{margin:20px auto 0;max-width:600px;color:var(--cinza);font-size:clamp(17px,2.1vw,21px)}
 .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.hero-mail{display:grid;gap:10px;margin:26px auto 0;max-width:360px;text-align:center}
+.hero-mail input{font:inherit;font-size:16px;color:var(--branco);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;padding:15px 20px;text-align:center;outline:none}
+.hero-mail input:focus{border-color:#EB3C8C}
+.hero-mail .btn{width:100%;font-size:16px;padding:15px}
+.hero-mail small{color:var(--cinza);font-size:12.5px;line-height:1.4}
+.hero-mail[hidden],.ctas[hidden],.fine[hidden]{display:none}
 .fine{margin-top:14px;font-size:14px;color:var(--cinza)}
 .window{width:min(1100px,94vw);border-radius:14px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.14);
   box-shadow:0 30px 80px -20px rgba(110,40,220,.45)}
@@ -392,6 +399,11 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
       <div class="ctas">
         <a class="btn btn-main" href="#baixar">Testar 14 dias GRÁTIS</a>
       </div>
+      <form class="hero-mail" id="heroForm" novalidate hidden>
+        <input type="email" id="heroEmail" inputmode="email" autocomplete="email" placeholder="Seu e-mail" aria-label="Seu e-mail">
+        <button type="submit" class="btn btn-main" id="heroSend">Me manda o link para o computador</button>
+        <small>O Obtura é instalado no Mac ou no Windows. Você recebe o link e baixa no computador: 14 dias grátis, sem cartão.</small>
+      </form>
       <div class="fine">Sem cartão de crédito · Mac e Windows · depois R$ 29,90/mês</div>
     </div>
     <div class="window" id="heroWin">
@@ -549,13 +561,22 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent) && innerWidth < 1100);
   if (isMobile) document.body.classList.add('is-mobile');
 
+  // teste A/B no celular: "a" é a página de sempre, "b" já pede o e-mail no topo para mandar o link ao computador
+  let HERO = null;
+  if (isMobile) {
+    try { HERO = localStorage.getItem('obtura_hero'); if (HERO !== 'a' && HERO !== 'b') { HERO = Math.random() < .5 ? 'a' : 'b'; localStorage.setItem('obtura_hero', HERO); } }
+    catch (e) { HERO = 'a'; }
+    if (HERO === 'b') { $('#heroForm').hidden = false; document.querySelector('.hero .ctas').hidden = true;
+      const f = document.querySelector('.hero .fine'); if (f) f.hidden = true; }
+  }
+
   // destaca o botão do sistema de quem está vendo
   const ua = navigator.userAgent;
   if (!isMobile) (/Windows/.test(ua) ? $('#dlWin') : /Mac/.test(ua) ? $('#dlMac') : null)?.classList.add('me');
 
   const toast = msg => { const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),3200); };
   // celular: tocar em Mac ou Windows abre a escolha e manda o link para o computador
-  const sheet = $('#sheet'), NOMES = {mac:'Mac', windows:'Windows'};
+  const sheet = $('#sheet'), NOMES = {mac:'Mac', windows:'Windows', auto:'o computador'};
   let sheetOs = 'mac', linkId = '', linkSent = false;
   const linkUrl = os => `https://obturaapp.com.br/baixar/?os=${os}&l=${linkId}&utm_source=celular&utm_medium=link_enviado`;
   const linkText = os => `Obtura para ${NOMES[os]}, teste GRÁTIS por 14 dias. Abra no computador para baixar: ${linkUrl(os)}`;
@@ -599,6 +620,23 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     else location.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(`Obtura para ${NOMES[sheetOs]}`) + '&body=' + encodeURIComponent(linkText(sheetOs));
   });
   $('#shMail').addEventListener('click', () => sent('email'));
+  $('#heroForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = $('#heroEmail').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { toast('Confira o e-mail.'); $('#heroEmail').focus(); return; }
+    const btn = $('#heroSend'); btn.disabled = true; btn.textContent = 'Enviando…';
+    linkId = window.funil ? funil.novoLink() : Date.now().toString(36); sheetOs = 'auto';
+    let ok = false;
+    try {
+      const r = await fetch(LEAD_URL, {method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, os: 'auto', ref: (typeof REF === 'string' && REF) || undefined, link: linkId})});
+      ok = r.ok && (await r.json()).sent === true;
+    } catch(_) {}
+    btn.disabled = false; btn.textContent = 'Me manda o link para o computador';
+    sent('topo_email');
+    if (ok) { toast('Pronto! Abra o e-mail no computador para baixar o Obtura.'); $('#heroEmail').value = ''; }
+    else location.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent('Obtura para o computador') + '&body=' + encodeURIComponent(linkText('auto'));
+  });
   $('#shCopy').addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(linkText(sheetOs)); toast('Link copiado. Cole no WhatsApp, e-mail ou notas e abra no computador.'); sent('copiar'); }
     catch(e) { toast(DOWNLOADS[sheetOs]); }
@@ -665,7 +703,8 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
       if (!sessionStorage.getItem(k)) { sessionStorage.setItem(k, 1); refEvent('visit'); } } catch(e){ refEvent('visit'); }
     tag('embaixador', REF); }
   window.OBTURA_REF = REF || undefined;
-  step('visita');
+  if (HERO) tag('hero', HERO);
+  step('visita', HERO ? 'hero_' + HERO : undefined);
   document.querySelectorAll('.dl a').forEach(a => a.addEventListener('click', () => refEvent('download_' + a.dataset.os)));
   ['#mobShare', '#mobWa', '#mobMail', '#mobCopy'].forEach(id => $(id)?.addEventListener('click', () => refEvent('link_celular')));
 
