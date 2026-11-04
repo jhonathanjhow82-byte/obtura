@@ -278,6 +278,7 @@ footer a{color:var(--branco);font-weight:500}
 /* celular: escolher Mac ou Windows e mandar o link para o computador */
 .sheet{position:fixed;inset:0;z-index:90;visibility:hidden;transition:visibility 0s .35s}
 .sheet.on{visibility:visible;transition:none}
+.sheet.off{display:none}
 .sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .3s}
 .sheet.on .sheet-bg{opacity:1}
 .sheet-card{position:absolute;left:0;right:0;bottom:0;background:#16161b;border:1px solid rgba(255,255,255,.12);border-bottom:0;border-radius:22px 22px 0 0;
@@ -506,7 +507,7 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
   Obtura é um produto da Martins Fotografias Ltda · CNPJ 44.227.497/0001-50 · Guarapari (ES), Brasil
 </footer>
 <div class="toast" id="toast"></div>
-<div class="sheet" id="sheet" aria-hidden="true">
+<div class="sheet off" id="sheet" aria-hidden="true">
   <div class="sheet-bg" data-close></div>
   <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div class="sheet-grab"></div>
@@ -532,6 +533,7 @@ if(l.readyState==='complete')go();else c.addEventListener('load',function(){setT
   </div>
 </div>
 
+<script src="funil.js"></script>
 <script>
 /* ==== LINKS DE DOWNLOAD: cole aqui os links dos instaladores ==== */
 const DOWNLOADS = {
@@ -554,8 +556,9 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   const toast = msg => { const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),3200); };
   // celular: tocar em Mac ou Windows abre a escolha e manda o link para o computador
   const sheet = $('#sheet'), NOMES = {mac:'Mac', windows:'Windows'};
-  let sheetOs = 'mac';
-  const linkText = os => `Obtura para ${NOMES[os]}, teste GRÁTIS por 14 dias. Abra no computador para baixar: ${DOWNLOADS[os]}\nComo instalar e suporte: https://obturaapp.com.br/?utm_source=celular&utm_medium=link_enviado#baixar`;
+  let sheetOs = 'mac', linkId = '', linkSent = false;
+  const linkUrl = os => `https://obturaapp.com.br/baixar/?os=${os}&l=${linkId}&utm_source=celular&utm_medium=link_enviado`;
+  const linkText = os => `Obtura para ${NOMES[os]}, teste GRÁTIS por 14 dias. Abra no computador para baixar: ${linkUrl(os)}`;
   const pickOs = os => {
     sheetOs = os;
     sheet.querySelectorAll('.seg button').forEach(b => { const on = b.dataset.os === os; b.classList.toggle('sel', on); b.setAttribute('aria-checked', on); });
@@ -566,9 +569,14 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   const sent = how => { try {
     window.fbq && fbq('track', 'Lead', {content_name: 'link_celular_' + how, content_category: 'celular'});
     window.fbq && fbq('trackCustom', 'LinkCelular', {meio: how, os: sheetOs});
-    window.clarity && clarity('set', 'link_celular', how + '_' + sheetOs); } catch(e){} };
-  const openSheet = os => { pickOs(os); sheet.classList.add('on'); sheet.setAttribute('aria-hidden','false'); };
-  const closeSheet = () => { sheet.classList.remove('on'); sheet.setAttribute('aria-hidden','true'); };
+    window.clarity && clarity('set', 'link_celular', how + '_' + sheetOs); } catch(e){}
+    linkSent = true; window.funil && funil.send('link_enviado', how + '_' + sheetOs, {l: linkId}); };
+  const openSheet = os => { linkId = window.funil ? funil.novoLink() : Date.now().toString(36); linkSent = false; pickOs(os);
+    sheet.classList.remove('off'); void sheet.offsetWidth; sheet.classList.add('on'); sheet.setAttribute('aria-hidden','false'); };
+  const closeSheet = () => { if (!sheet.classList.contains('on')) return;
+    if (!linkSent && window.funil) funil.send('fechou_envio', sheetOs, {l: linkId});
+    sheet.classList.remove('on'); sheet.setAttribute('aria-hidden','true');
+    setTimeout(() => { if (!sheet.classList.contains('on')) sheet.classList.add('off'); }, 400); };
   sheet.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => pickOs(b.dataset.os)));
   sheet.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeSheet));
   addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
@@ -582,7 +590,7 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     let ok = false;
     try {
       const r = await fetch(LEAD_URL, {method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email, os: sheetOs, ref: (typeof REF === 'string' && REF) || undefined})});
+        body: JSON.stringify({email, os: sheetOs, ref: (typeof REF === 'string' && REF) || undefined, link: linkId})});
       ok = r.ok && (await r.json()).sent === true;
     } catch(_) {}
     btn.disabled = false; btn.textContent = 'Mandar o link para meu e-mail';
@@ -613,20 +621,21 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   // rastreamento (Meta Pixel + Clarity)
   const track = (ev, data, custom) => { try { window.fbq && fbq(custom ? 'trackCustom' : 'track', ev, data || {}); } catch(e){} };
   const tag = (k, v) => { try { window.clarity && clarity('set', k, v); } catch(e){} };
+  const step = (e, d) => { window.funil && funil.send(e, d); };
   const device = isMobile ? 'celular' : 'computador';
   tag('dispositivo', device);
   document.querySelectorAll('.dl a').forEach(a => a.addEventListener('click', () => {
     const os = a.dataset.os;
     // (no celular o toque só abre a escolha de como mandar o link: não é um download)
-    if (isMobile) { track('AbriuEnvioCelular', {os}, true); tag('abriu_envio', os); return; }
+    if (isMobile) { track('AbriuEnvioCelular', {os}, true); tag('abriu_envio', os); window.funil && funil.send('abriu_envio', os, {l: linkId}); return; }
     track('Lead', {content_name: 'download_' + os, content_category: device});
     track('Download', {os, dispositivo: device}, true);
-    tag('baixou', os);
+    tag('baixou', os); step('download', os);
   }));
   document.querySelectorAll('a[href="#baixar"]').forEach(a => a.addEventListener('click', () =>
-    track('ClicouBaixarTopo', {dispositivo: device}, true)));
+    { track('ClicouBaixarTopo', {dispositivo: device}, true); step('clicou_cta'); }));
   document.querySelectorAll('a[href^="https://ig.me/"]').forEach(a => a.addEventListener('click', () =>
-    track('Contact', {content_name: 'suporte_direct'})));
+    { track('Contact', {content_name: 'suporte_direct'}); step('contato'); }));
   let maxDepth = 0, sawPrices = false, docH = 0;
   const dlBox = $('#baixar .dl');
   // altura da página lida só no load/resize: ler layout a cada evento de scroll trava o Safari
@@ -634,10 +643,10 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   addEventListener('load', readH); addEventListener('resize', readH, {passive:true}); readH();
   const onScroll = () => {
     const d = Math.round(100 * (scrollY + innerHeight) / docH);
-    [25, 50, 75, 100].forEach(p => { if (d >= p && maxDepth < p) { maxDepth = p; track('Rolagem', {percentual: p}, true); } });
+    [25, 50, 75, 100].forEach(p => { if (d >= p && maxDepth < p) { maxDepth = p; track('Rolagem', {percentual: p}, true); step('rolagem_' + p); } });
   };
   if (dlBox) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting && !sawPrices) { sawPrices = true; o.disconnect();
-    track('ViewContent', {content_name: 'secao_baixar_precos', content_category: device}); tag('viu_precos', 'sim'); } }),
+    track('ViewContent', {content_name: 'secao_baixar_precos', content_category: device}); tag('viu_precos', 'sim'); step('viu_precos'); } }),
     {rootMargin: '0px 0px -15% 0px'}).observe(dlBox);
   addEventListener('scroll', onScroll, {passive:true});
   setTimeout(onScroll, 1500);
@@ -655,6 +664,8 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   if (REF) { try { const k = 'obtura_ref_visit_' + new Date().toDateString();
       if (!sessionStorage.getItem(k)) { sessionStorage.setItem(k, 1); refEvent('visit'); } } catch(e){ refEvent('visit'); }
     tag('embaixador', REF); }
+  window.OBTURA_REF = REF || undefined;
+  step('visita');
   document.querySelectorAll('.dl a').forEach(a => a.addEventListener('click', () => refEvent('download_' + a.dataset.os)));
   ['#mobShare', '#mobWa', '#mobMail', '#mobCopy'].forEach(id => $(id)?.addEventListener('click', () => refEvent('link_celular')));
 
@@ -683,7 +694,7 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   }), {threshold:[0,.55,.8]}).observe(cmp);
 
   // tocar na foto alterna antes/depois (as pessoas tocavam e nada acontecia)
-  cmp.addEventListener('click', () => { cmp.classList.add('done'); cmp.classList.toggle('go'); tag('antes_depois','toque'); });
+  cmp.addEventListener('click', () => { cmp.classList.add('done'); cmp.classList.toggle('go'); tag('antes_depois','toque'); step('antes_depois'); });
   // exemplos reais que se alternam: o videomaker primeiro, depois o ar-condicionado
   const EX = [
     {a:'img/vm_antes.webp', m:'img/vm_mascara.webp', d:'img/vm_depois.webp', t:'O videomaker no fundo da foto do noivo? Um clique e a IA apaga e refaz o fundo.'},

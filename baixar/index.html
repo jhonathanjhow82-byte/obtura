@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Baixar o Obtura · 14 dias grátis</title>
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://obturaapp.com.br/">
+<meta name="theme-color" content="#0A0A0C">
+<link rel="icon" href="/img/icon.png">
+<style>
+:root{--preto:#0A0A0C;--rosa:#EB3C8C;--roxo:#6E28DC;--laranja:#FF823C;--dourado:#FFCD5A;--branco:#FFFFFF;--cinza:#B2B2BC;
+  --grad:linear-gradient(90deg,var(--roxo),var(--rosa) 40%,var(--laranja) 75%,var(--dourado))}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--preto);color:var(--branco);font-family:Inter,system-ui,-apple-system,sans-serif}
+main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:32px max(16px,env(safe-area-inset-left)) 32px max(16px,env(safe-area-inset-right));gap:18px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:20px;color:var(--branco);text-decoration:none}
+.brand img{width:28px;height:28px}
+h1{font-size:clamp(26px,5vw,40px);letter-spacing:-.02em;line-height:1.15;max-width:640px}
+h1 b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+p{color:var(--cinza);font-size:16px;line-height:1.5;max-width:520px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;cursor:pointer;font:inherit;font-weight:600;
+  font-size:17px;padding:16px 28px;border-radius:999px;color:var(--branco);background:var(--grad);text-decoration:none;
+  box-shadow:0 10px 40px -10px rgba(235,60,140,.7)}
+.btn.ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);box-shadow:none;font-size:15px;padding:12px 22px}
+ol{color:var(--cinza);text-align:left;max-width:460px;font-size:15px;line-height:1.6;padding-left:22px}
+small{color:var(--cinza);font-size:13px}
+small a,p a{color:var(--branco)}
+[hidden]{display:none!important}
+</style>
+<!-- Meta Pixel (dataset 507503567409457) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','507503567409457');
+fbq('init','1432541521585388');
+fbq('track','PageView');
+</script>
+<script>
+(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","z29b1lan3m");
+</script>
+<script src="/funil.js"></script>
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><img src="/img/mark.png" alt="">obtura</a>
+
+  <section id="pc" hidden>
+    <h1>Seu Obtura para <b id="nome">Mac</b> está baixando</h1>
+    <p style="margin:14px auto 22px">São 14 dias grátis, sem cartão. Se o download não começar sozinho, clique no botão.</p>
+    <a class="btn" id="baixar" href="#">Baixar o Obtura</a>
+    <ol id="passosMac" style="margin:26px auto 0">
+      <li>Abra o arquivo <b>Obtura-teste-Mac.dmg</b> que acabou de baixar.</li>
+      <li>Arraste o Obtura para a pasta Aplicativos e abra.</li>
+      <li>Crie sua conta no app e comece o teste grátis.</li>
+    </ol>
+    <ol id="passosWin" style="margin:26px auto 0" hidden>
+      <li>Na Microsoft Store, clique em <b>Obter</b> ou <b>Instalar</b>.</li>
+      <li>Abra o Obtura quando terminar.</li>
+      <li>Crie sua conta no app e comece o teste grátis.</li>
+    </ol>
+  </section>
+
+  <section id="cel" hidden>
+    <h1>Abra este link <b>no computador</b></h1>
+    <p style="margin:14px auto 22px">O Obtura é instalado no Mac ou no Windows. Mande este link para você e abra lá para baixar.</p>
+    <button class="btn" id="copiar" type="button">Copiar o link</button>
+  </section>
+
+  <small>Dúvidas? <a href="https://ig.me/m/obturaapp" target="_blank" rel="noopener">Chame no direct do @obturaapp</a> · <a href="/">obturaapp.com.br</a></small>
+</main>
+<script>
+(function(){
+  const DOWNLOADS = {
+    mac: "https://github.com/jhonathanjhow82-byte/obtura/releases/latest/download/Obtura-teste-Mac.dmg",
+    windows: "https://apps.microsoft.com/detail/9P71FGQ9JVJ6"
+  };
+  const q = new URLSearchParams(location.search);
+  const f = window.funil || {send(){}, celular: false, os: 'outro'};
+  // o sistema pedido no link; se o computador for outro, vale o do computador
+  let os = q.get('os') === 'windows' ? 'windows' : 'mac';
+  if (!f.celular && (f.os === 'mac' || f.os === 'windows')) os = f.os;
+  const l = /^[a-z0-9]{6,40}$/.test(q.get('l') || '') ? q.get('l') : undefined;
+  const track = (ev, data) => { try { window.fbq && fbq('trackCustom', ev, data); } catch(e){} };
+  const tag = (k, v) => { try { window.clarity && clarity('set', k, v); } catch(e){} };
+
+  f.send('abriu_link', os, {l});
+  track('AbriuLinkEnviado', {os, dispositivo: f.celular ? 'celular' : 'computador'});
+  tag('abriu_link', (f.celular ? 'celular_' : 'computador_') + os);
+
+  if (f.celular) {
+    document.getElementById('cel').hidden = false;
+    document.getElementById('copiar').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(location.href); document.getElementById('copiar').textContent = 'Link copiado'; } catch(e) {}
+    });
+    return;
+  }
+  document.getElementById('pc').hidden = false;
+  document.getElementById('nome').textContent = os === 'windows' ? 'Windows' : 'Mac';
+  document.getElementById('passosMac').hidden = os === 'windows';
+  document.getElementById('passosWin').hidden = os !== 'windows';
+  const a = document.getElementById('baixar');
+  a.href = DOWNLOADS[os];
+  if (os === 'mac') a.setAttribute('download', '');
+  let counted = false;
+  const baixou = () => { if (counted) return; counted = true;
+    f.send('baixou_do_link', os, {l});
+    try { window.fbq && fbq('track', 'Lead', {content_name: 'download_' + os, content_category: 'link_enviado'}); } catch(e){}
+    track('Download', {os, dispositivo: 'computador', origem: 'link_enviado'});
+    tag('baixou', os); };
+  a.addEventListener('click', baixou);
+  // o download começa sozinho (o Windows vai para a Microsoft Store)
+  setTimeout(() => { baixou(); location.href = DOWNLOADS[os]; }, 1200);
+})();
+</script>
+</body>
+</html>
