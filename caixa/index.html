@@ -1,0 +1,265 @@
+<!doctype html>
+<!--
+  Obtura's feedback inbox: the owner reads and answers the photographers' messages from the app's chat (phone first).
+  Published on the site as a static page (FEEDBACK_INBOX_URL, default https://obturaapp.com.br/caixa/). It signs in
+  with the owner's own Obtura account (the account server's Auth API, e-mail and password) and asks the
+  `feedback-admin` function, which only answers the addresses in its OWNER_EMAILS secret. Everything a photographer
+  wrote is put on the page as text (textContent), never as HTML.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#111114">
+<title>Obtura · Feedback</title>
+<style>
+  :root { --bg: #111114; --card: #1c1c21; --line: #2c2c33; --text: #f2f2f4; --dim: #9a9aa3; --accent: #eb3c8c; --mine: #2a2a31; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: var(--bg); border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 17px; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  button { font: inherit; border: 0; border-radius: 999px; padding: 9px 16px; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  button.quiet { background: transparent; color: var(--dim); padding: 8px 10px; }
+  button:disabled { opacity: .5; }
+  input, textarea { font: inherit; width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+  textarea { resize: none; min-height: 46px; max-height: 40vh; }
+  main { max-width: 760px; margin: 0 auto; padding: 0 0 120px; }
+  .login { padding: 32px 16px; display: grid; gap: 12px; }
+  .error { color: #ff7a8a; padding: 8px 16px; }
+  .thread { display: block; width: 100%; text-align: left; background: none; border-radius: 0; color: var(--text); font-weight: 400; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .thread .top { display: flex; gap: 8px; align-items: baseline; }
+  .thread .who { font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .thread .when, .meta { color: var(--dim); font-size: 13px; }
+  .thread .preview { color: var(--dim); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .thread.unread .who::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+  .thread.unread .preview { color: var(--text); }
+  .badge { font-size: 11px; color: var(--dim); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; margin-left: 6px; }
+  .info { padding: 10px 16px; color: var(--dim); font-size: 13px; border-bottom: 1px solid var(--line); word-break: break-word; }
+  .msgs { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .msg { max-width: 85%; padding: 9px 12px; border-radius: 16px; background: var(--card); white-space: pre-wrap; word-break: break-word; }
+  .msg.owner { align-self: flex-end; background: var(--accent); color: #fff; }
+  .msg .meta { margin-top: 4px; font-size: 11px; }
+  .msg.owner .meta { color: #ffe0ee; }
+  .msg img { display: block; max-width: 100%; border-radius: 8px; margin-top: 6px; }
+  .compose { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 8px; align-items: flex-end; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); }
+  .compose > div { max-width: 760px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; width: 100%; }
+  .empty { padding: 40px 16px; text-align: center; color: var(--dim); }
+</style>
+</head>
+<body>
+<header>
+  <button class="quiet" id="back" hidden aria-label="Voltar">‹ Voltar</button>
+  <h1 id="title">Feedback do Obtura</h1>
+  <button class="quiet" id="logout" hidden>Sair</button>
+</header>
+<main id="main"></main>
+<div class="compose" id="compose" hidden>
+  <div>
+    <textarea id="reply" rows="1" placeholder="Responder…" maxlength="4000"></textarea>
+    <button id="send">Enviar</button>
+  </div>
+</div>
+<script>
+"use strict";
+// The account server (the public key every Obtura app has; the function checks who may read).
+const SUPABASE_URL = "https://oqclsemdwzpsdyjbfxyh.supabase.co";
+const PUBLIC_KEY = "sb_publishable_vMELiBe682Gy1QNKC1-e-w_p3zv5q_l";
+const ADMIN = SUPABASE_URL + "/functions/v1/feedback-admin";
+const STORE = "obtura-inbox-session";
+
+const $ = (id) => document.getElementById(id);
+const main = $("main");
+let session = null;   // {access_token, refresh_token, expires_at}
+let current = null;   // the open conversation's id
+let timer = null;
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = String(text);
+  return e;
+}
+
+function when(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  const today = new Date().toDateString() === d.toDateString();
+  return today ? d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+               : d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+function keep(s) {
+  session = s ? { access_token: s.access_token, refresh_token: s.refresh_token, expires_at: s.expires_at || (Date.now() / 1000 + (s.expires_in || 3600)) } : null;
+  try { session ? localStorage.setItem(STORE, JSON.stringify(session)) : localStorage.removeItem(STORE); } catch (_) {}
+}
+
+async function auth(path, body) {
+  const r = await fetch(SUPABASE_URL + "/auth/v1/" + path, {
+    method: "POST",
+    headers: { apikey: PUBLIC_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const v = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(v.error_description || v.msg || "Não deu para entrar");
+  return v;
+}
+
+async function renew() {
+  if (!session || !session.refresh_token) throw new Error("login");
+  try {
+    keep(await auth("token?grant_type=refresh_token", { refresh_token: session.refresh_token }));
+  } catch (e) {
+    keep(null);
+    throw new Error("login");
+  }
+}
+
+async function ask(body, again = true) {
+  if (!session) throw new Error("login");
+  if (session.expires_at - 60 < Date.now() / 1000) await renew();
+  const r = await fetch(ADMIN, {
+    method: "POST",
+    headers: { apikey: PUBLIC_KEY, Authorization: "Bearer " + session.access_token, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const v = await r.json().catch(() => ({}));
+  if (r.status === 401 && again) { await renew(); return ask(body, false); }
+  if (r.status === 401) { keep(null); throw new Error("login"); }
+  if (!r.ok) throw new Error(v.error || ("Erro " + r.status));
+  return v;
+}
+
+function failed(e) {
+  if (String(e.message) === "login") { showLogin(); return; }
+  const box = el("div", "error", e.message);
+  main.prepend(box);
+  setTimeout(() => box.remove(), 6000);
+}
+
+function showLogin(message) {
+  clearInterval(timer);
+  current = null;
+  $("back").hidden = true; $("logout").hidden = true; $("compose").hidden = true;
+  $("title").textContent = "Feedback do Obtura";
+  main.replaceChildren();
+  const f = el("form", "login");
+  const email = el("input"); email.type = "email"; email.placeholder = "Seu e-mail"; email.autocomplete = "username"; email.required = true;
+  const pass = el("input"); pass.type = "password"; pass.placeholder = "Senha"; pass.autocomplete = "current-password"; pass.required = true;
+  const go = el("button", "", "Entrar"); go.type = "submit";
+  f.append(el("p", "meta", "Entre com a sua conta do Obtura."), email, pass, go);
+  if (message) f.append(el("p", "error", message));
+  f.onsubmit = async (ev) => {
+    ev.preventDefault();
+    go.disabled = true;
+    try {
+      keep(await auth("token?grant_type=password", { email: email.value.trim(), password: pass.value }));
+      await showList();
+    } catch (e) {
+      showLogin(e.message === "login" ? "Entre de novo" : e.message);
+    }
+  };
+  main.append(f);
+}
+
+async function showList() {
+  clearInterval(timer);
+  current = null;
+  history.replaceState(null, "", location.pathname);
+  $("back").hidden = true; $("logout").hidden = false; $("compose").hidden = true;
+  $("title").textContent = "Feedback do Obtura";
+  const v = await ask({ action: "threads" });
+  if (current !== null) return;
+  main.replaceChildren();
+  const unread = v.threads.filter((t) => t.unread).length;
+  document.title = (unread ? "(" + unread + ") " : "") + "Obtura · Feedback";
+  if (v.threads.length === 0) main.append(el("div", "empty", "Nenhuma mensagem ainda."));
+  for (const t of v.threads) {
+    const b = el("button", "thread" + (t.unread ? " unread" : ""));
+    const top = el("div", "top");
+    const who = el("span", "who", t.name || t.email || "Sem nome");
+    if (!t.verified) who.append(el("span", "badge", "sem conta"));
+    top.append(who, el("span", "when", when(t.lastMessageAt)));
+    b.append(top, el("div", "preview", t.email && t.name ? t.email + " · " + t.preview : t.preview));
+    b.onclick = () => openThread(t.id).catch(failed);
+    main.append(b);
+  }
+  timer = setInterval(() => { if (!document.hidden && current === null) showList().catch(failed); }, 20000);
+}
+
+function bubble(m) {
+  const d = el("div", "msg " + (m.author === "owner" ? "owner" : "user"), m.body);
+  if (m.hasImage) {
+    const b = el("button", "quiet", "Ver captura da tela");
+    b.onclick = async () => {
+      b.disabled = true;
+      try {
+        const v = await ask({ action: "image", messageId: m.id });
+        if (typeof v.data !== "string" || !/^[A-Za-z0-9+/]+={0,2}$/.test(v.data)) throw new Error("Imagem inválida");
+        const img = el("img"); img.alt = "Captura da tela"; img.src = "data:image/jpeg;base64," + v.data;
+        b.replaceWith(img);
+      } catch (e) { b.disabled = false; failed(e); }
+    };
+    d.append(b);
+  }
+  d.append(el("div", "meta", when(m.createdAt)));
+  return d;
+}
+
+async function openThread(id) {
+  clearInterval(timer);
+  current = id;
+  history.replaceState(null, "", "#t=" + id);
+  const v = await ask({ action: "thread", id });
+  if (current !== id) return;
+  const t = v.thread;
+  $("back").hidden = false; $("logout").hidden = true; $("compose").hidden = false;
+  $("title").textContent = t.name || t.email || "Sem nome";
+  const info = el("div", "info");
+  const app = t.app ? ("Obtura " + (t.app.version || "") + (t.app.build ? " (build " + t.app.build + ")" : "") + " · " + (t.app.os || "")) : "";
+  info.textContent = [t.email + (t.verified ? "" : " (sem conta: não verificado)"), app].filter(Boolean).join(" · ");
+  const list = el("div", "msgs");
+  for (const m of v.messages) list.append(bubble(m));
+  main.replaceChildren(info, list);
+  window.scrollTo(0, document.body.scrollHeight);
+  const seen = v.messages.length ? v.messages[v.messages.length - 1].id : 0;
+  timer = setInterval(async () => {
+    if (document.hidden || current !== id) return;
+    try {
+      const n = await ask({ action: "thread", id });
+      const last = n.messages.length ? n.messages[n.messages.length - 1].id : 0;
+      if (current === id && last !== seen && $("reply").value === "") openThread(id).catch(failed);
+    } catch (e) { failed(e); }
+  }, 15000);
+}
+
+async function send() {
+  const text = $("reply").value.trim();
+  if (!text || current === null) return;
+  $("send").disabled = true;
+  try {
+    const v = await ask({ action: "reply", id: current, body: text });
+    $("reply").value = "";
+    grow();
+    document.querySelector(".msgs")?.append(bubble(v.message));
+    window.scrollTo(0, document.body.scrollHeight);
+  } catch (e) { failed(e); }
+  $("send").disabled = false;
+}
+
+function grow() { const r = $("reply"); r.style.height = "auto"; r.style.height = Math.min(r.scrollHeight, window.innerHeight * 0.4) + "px"; }
+
+$("send").onclick = send;
+$("reply").oninput = grow;
+$("reply").onkeydown = (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); } };
+$("back").onclick = () => showList().catch(failed);
+$("logout").onclick = () => { keep(null); showLogin(); };
+
+try { session = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (_) { session = null; }
+const wanted = Number((location.hash.match(/^#t=(\d+)$/) || [])[1] || 0);
+if (!session) showLogin();
+else (wanted ? openThread(wanted) : showList()).catch(failed);
+</script>
+</body>
+</html>
