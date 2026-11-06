@@ -379,6 +379,12 @@ t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
 y=l.getElementsByTagName(r)[0];var go=function(){y.parentNode.insertBefore(t,y)};
 if(l.readyState==='complete')go();else c.addEventListener('load',function(){setTimeout(go,0)});})(window,document,"clarity","script",CLARITY_ID);})();
 </script>
+<!-- Google Ads (tag do Google): mede os anúncios da Pesquisa; o download conta como conversão -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18558939916"></script>
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date()); gtag('config', 'AW-18558939916');
+</script>
 </head>
 <body>
 <div class="bg"><div class="grid"></div><div class="glow"></div><div class="vignette"></div></div>
@@ -669,6 +675,7 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     track('Lead', {content_name: 'download_' + os, content_category: device});
     track('Download', {os, dispositivo: device}, true);
     tag('baixou', os); step('download', os);
+    try { window.gtag && gtag('event', 'conversion', {send_to: 'AW-18558939916/twg9CMbU8LIdEIzmy5FF'}); } catch(e){}
   }));
   document.querySelectorAll('a[href="#baixar"]').forEach(a => a.addEventListener('click', () =>
     { track('ClicouBaixarTopo', {dispositivo: device}, true); step('clicou_cta'); }));

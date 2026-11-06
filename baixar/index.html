@@ -45,6 +45,12 @@ fbq('track','PageView');
 t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
 y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","z29b1lan3m");
 </script>
+<!-- Google Ads (tag do Google): mede os anúncios da Pesquisa; o download conta como conversão -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18558939916"></script>
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date()); gtag('config', 'AW-18558939916');
+</script>
 <script src="/funil.js"></script>
 </head>
 <body>
@@ -113,7 +119,8 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document
     f.send('baixou_do_link', os, {l});
     try { window.fbq && fbq('track', 'Lead', {content_name: 'download_' + os, content_category: 'link_enviado'}); } catch(e){}
     track('Download', {os, dispositivo: 'computador', origem: 'link_enviado'});
-    tag('baixou', os); };
+    tag('baixou', os);
+    try { window.gtag && gtag('event', 'conversion', {send_to: 'AW-18558939916/twg9CMbU8LIdEIzmy5FF'}); } catch(e){} };
   a.addEventListener('click', baixou);
   // o download começa sozinho (o Windows vai para a Microsoft Store)
   setTimeout(() => { baixou(); location.href = DOWNLOADS[os]; }, 1200);
