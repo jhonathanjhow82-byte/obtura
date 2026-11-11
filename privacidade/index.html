@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="canonical" href="https://obturaapp.com.br/privacidade/"><title>Privacidade · Obtura</title>
-<meta name="description" content="Como o Obtura trata os seus dados: as fotos ficam no seu computador.">
+<meta name="description" content="Como o Obtura trata os seus dados (LGPD): o que coletamos, por quanto tempo, com quem compartilhamos e como pedir acesso ou exclusão. As fotos ficam no seu computador.">
 <meta name="theme-color" content="#0A0A0C">
 <link rel="icon" href="../img/icon.png">
 <style>
@@ -23,55 +23,103 @@ p+p{margin-top:10px}
 ul{padding-left:20px}li{margin:6px 0}
 .data{color:var(--cinza);font-size:14px}
 .volta{display:inline-block;margin-bottom:24px;color:var(--cinza);text-decoration:none}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:8px 8px;border-bottom:1px solid rgba(255,255,255,.12);color:#dcdce2}
+th{color:#fff;font-weight:600}
+.tab{overflow-x:auto}
+footer{max-width:760px;margin:0 auto;padding:0 16px 40px;color:var(--cinza);font-size:14px}
 </style>
 </head>
 <body>
+<!-- RASCUNHO para o Jhonathan revisar (auditoria 10/11/2026). Não substitui a revisão de um advogado.
+     Itens marcados com DECIDIR precisam de uma decisão dele antes de publicar. -->
 <div class="bar"></div>
 <main>
-<a class="volta" href="../">← Obtura</a>
+<a class="volta" href="/">← Obtura</a>
 <h1>Política de privacidade</h1>
-<p class="data">Atualizada em 5 de novembro de 2026.</p>
+<p class="data">Versão 2026-11-10 · atualizada em 10 de novembro de 2026.</p>
 
 <h2>Resumo</h2>
-<p>As suas fotos ficam no seu computador. O Obtura escolhe, edita e usa a IA no próprio computador, sem enviar as fotos para nenhum servidor.</p>
-<p>Para a sua conta e a assinatura, guardamos só o necessário: nome, e-mail e os dados do pagamento.</p>
-
-<h2>Quem cuida dos dados</h2>
-<p>O Obtura é feito pela Martins Fotografias Ltda (CNPJ 44.227.497/0001-50, Guarapari, ES), de Jhonathan Martins, fotógrafo de casamento. Fale com a gente pela <a href="https://ig.me/m/obturaapp">mensagem no Instagram @obturaapp</a>.</p>
-
-<h2>O que coletamos e por quê</h2>
 <ul>
-<li><b>Conta:</b> nome, sobrenome e e-mail, para você entrar no app e para o teste grátis.</li>
-<li><b>Pagamento:</b> o plano, o CPF e a forma de pagamento (Pix ou cartão). O pagamento é feito pela Asaas, que guarda os dados do cartão. O Obtura nunca vê o número do cartão.</li>
-<li><b>Uso do app:</b> a versão instalada e se há uma versão nova, para manter o app funcionando e atualizado. Também registramos as etapas que você usa (abriu o app, importou fotos, usou a seleção com IA, removeu um objeto, revelou, exportou, abriu os planos, assinou), no máximo uma vez por dia cada, com o código embaralhado do computador e a sua conta. Serve para entender onde o app ajuda e onde as pessoas travam. Vai só a etapa e, às vezes, a quantidade aproximada de fotos: nunca as fotos, os nomes dos arquivos ou o que elas mostram.</li>
-<li><b>Computador:</b> um código embaralhado do computador (SHA-256, que não permite saber qual é o computador), para dar um só teste grátis por computador e contar as instalações. Nada sobre você vai junto.</li>
-<li><b>Link pelo celular:</b> se você pede no site o link para baixar no computador, guardamos o e-mail que digitou e o sistema (Mac ou Windows), para mandar o link e avisos sobre o teste grátis. Peça para apagar quando quiser.</li>
-<li><b>Etapas no site:</b> o site guarda no seu navegador um código aleatório e registra as etapas da visita (chegou, rolou a página, viu os preços, pediu o link, abriu o link no computador, baixou), com o tipo de aparelho e o anúncio que trouxe você. Nada que identifique você.</li>
-<li><b>Site:</b> o obturaapp.com.br usa o Pixel da Meta e a tag do Google Ads, para medir os anúncios, e o Microsoft Clarity, para ver como as pessoas usam a página (cliques e rolagem, sem o que você digita).</li>
-<li><b>Anúncios:</b> quando alguém começa o teste ou assina, avisamos a Meta (Facebook e Instagram) com o e-mail embaralhado (código irreversível, SHA-256), para medir os anúncios. Nenhuma foto vai junto.</li>
+<li>As suas fotos ficam no seu computador. O Obtura escolhe, edita e usa a IA no próprio computador, sem enviar as fotos para nenhum servidor.</li>
+<li>Para a conta e a assinatura guardamos só o necessário: nome, e-mail, WhatsApp e os dados do pagamento.</li>
+<li>No site, Meta, Google e Microsoft Clarity só são ligados se você aceitar no aviso de cookies.</li>
+<li>Você pode pedir para ver, corrigir ou apagar os seus dados pelo e-mail <a href="mailto:obtura@outlook.com">obtura@outlook.com</a> ou apagar a conta no próprio app.</li>
 </ul>
+
+<h2>Quem cuida dos dados (controlador)</h2>
+<p>O Obtura é feito pela <b>Martins Fotografias Ltda</b>, CNPJ 44.227.497/0001-50, Guarapari (ES), Brasil. <!-- DECIDIR: endereço completo, se quiser publicar --></p>
+<p><b>Canal de privacidade e encarregado (LGPD, art. 41):</b> <a href="mailto:obtura@outlook.com">obtura@outlook.com</a>. <!-- DECIDIR: nome do encarregado (ou manter só o canal, se a empresa for agente de tratamento de pequeno porte, Resolução CD/ANPD nº 2/2022) --> Também respondemos pela mensagem no Instagram <a href="https://ig.me/m/obturaapp">@obturaapp</a>.</p>
+
+<h2>O que coletamos, para quê e por quanto tempo</h2>
+<div class="tab"><table>
+<tr><th>Dado</th><th>Para quê (base legal)</th><th>Por quanto tempo</th></tr>
+<tr><td>Nome, sobrenome, e-mail e senha (guardada cifrada, nunca como texto)</td><td>Criar e abrir a sua conta e dar o teste grátis (execução do contrato)</td><td>Enquanto a conta existir. Ao apagar a conta, saem na hora.</td></tr>
+<tr><td>WhatsApp</td><td>Falar com você sobre a conta, o teste e a assinatura (execução do contrato). Mensagens de novidades só se você marcar que quer (consentimento).</td><td>Enquanto a conta existir.</td></tr>
+<tr><td>Aceite dos termos e da política (versão, data e hora) e a escolha sobre novidades</td><td>Provar o que você aceitou (cumprimento de obrigação legal e exercício de direitos)</td><td>Enquanto a conta existir e até 5 anos depois.</td></tr>
+<tr><td>Plano, forma de pagamento, CPF, datas e valores pagos</td><td>Cobrar a assinatura e emitir as notas (execução do contrato e obrigação legal)</td><td>Os registros fiscais e de pagamento, pelo prazo da lei (5 anos). O CPF sai da nossa base ao apagar a conta; a plataforma de pagamento guarda o que a lei pede a ela.</td></tr>
+<tr><td>Código embaralhado do computador (SHA-256, que não permite saber qual é o computador)</td><td>Dar um só teste grátis por computador e contar as instalações (legítimo interesse: evitar fraude)</td><td>Até 2 anos depois do último uso. Fica mesmo se a conta for apagada, sem ligação com você.</td></tr>
+<tr><td>Etapas de uso do app (abriu, importou, usou a seleção com IA, removeu um objeto, revelou, exportou, abriu os planos, assinou), no máximo uma vez por dia cada, com a quantidade aproximada de fotos</td><td>Entender onde o app ajuda e onde as pessoas travam (legítimo interesse). Nunca as fotos, os nomes dos arquivos ou o que elas mostram.</td><td>Até 2 anos.</td></tr>
+<tr><td>Mensagens do chat de suporte do app (e a captura de tela, se você anexar)</td><td>Responder e resolver o seu problema (execução do contrato)</td><td>Enquanto a conta existir. Saem ao apagar a conta.</td></tr>
+<tr><td>Cupom ou convite usado no cadastro</td><td>Dar o desconto e pagar o embaixador ou o amigo que indicou (execução do contrato)</td><td>Enquanto a conta existir; o registro do uso do cupom fica para as contas do embaixador.</td></tr>
+<tr><td>E-mail digitado no site para receber o link</td><td>Mandar o link para baixar no computador. Novidades só se você marcar a caixa (consentimento).</td><td>Até 6 meses, se você não criar a conta. Todo e-mail tem o link para descadastrar e apagar.</td></tr>
+<tr><td>Endereço IP, sempre embaralhado com chave</td><td>Limitar abusos (muitos cadastros ou envios seguidos) (legítimo interesse: segurança)</td><td>Até 1 dia.</td></tr>
+<tr><td>Etapas da visita ao site (chegou, rolou, viu os preços, pediu o link, baixou), com um código aleatório, o tipo de aparelho e o anúncio que trouxe você</td><td>Medir o site (legítimo interesse). O código só fica guardado entre visitas se você aceitar a medição no aviso de cookies.</td><td>Até 1 ano.</td></tr>
+</table></div>
+<!-- DECIDIR: os prazos acima são a proposta da auditoria; confirme se valem para você antes de publicar. -->
 
 <h2>O que não coletamos</h2>
 <ul>
 <li>As suas fotos, edições e catálogos. Eles ficam no seu computador.</li>
 <li>Os rostos e as pessoas que a IA reconhece. Isso também fica só no seu computador.</li>
+<li>O número do seu cartão: ele é digitado direto na página segura da plataforma de pagamento.</li>
 </ul>
+
+<h2 id="cookies">Cookies e medição no site</h2>
+<p>Ao entrar no obturaapp.com.br aparece um aviso de cookies. Sem o seu ok, nenhum destes é ligado:</p>
+<ul>
+<li><b>Medição:</b> Microsoft Clarity (cliques e rolagem na página, sem o que você digita) e o código da visita guardado entre visitas.</li>
+<li><b>Anúncios:</b> Pixel da Meta (Facebook e Instagram) e tag do Google Ads, para saber quais anúncios trazem quem baixa o Obtura.</li>
+</ul>
+<p>Sempre ligados, porque o site precisa deles: a sua escolha sobre os cookies e o código do embaixador do link que você abriu (30 dias), para o embaixador receber pelo que indicou.</p>
+<p>Você muda a escolha a qualquer hora no link <a href="#cookies" data-cookies>Cookies</a>, no rodapé do site.</p>
+
+<h2>Anúncios (Meta)</h2>
+<p>Quando alguém começa o teste ou assina, avisamos a Meta com o e-mail embaralhado (SHA-256, código irreversível), para medir os anúncios (legítimo interesse). Nenhuma foto vai junto. <!-- DECIDIR: a ANPD tende a pedir consentimento para isso; a auditoria sugere enviar só de quem marcou a caixa de novidades ou aceitou anúncios. --></p>
 
 <h2>Com quem compartilhamos</h2>
+<p>Só com os serviços que fazem o Obtura funcionar, cada um para a sua parte:</p>
 <ul>
-<li><b>Supabase:</b> o servidor onde ficam as contas.</li>
-<li><b>Microsoft:</b> o Clarity, só no site, como explicado acima.</li>
-<li><b>Asaas:</b> os pagamentos e as notas.</li>
-<li><b>Meta:</b> a medição dos anúncios, como explicado acima.</li>
-<li><b>Google:</b> a medição dos anúncios da Pesquisa Google, só no site.</li>
+<li><b>Supabase</b>: o servidor das contas, dos pagamentos e do suporte (servidores fora do Brasil).</li>
+<li><b>Asaas</b> e <b>AbacatePay</b>: os pagamentos (cartão e Pix) e as notas.</li>
+<li><b>Resend</b>: o envio dos e-mails (o link do site e os avisos da conta).</li>
+<li><b>Meta</b>: a medição dos anúncios, como explicado acima, e as mensagens de suporte no Instagram.</li>
+<li><b>Google</b>: a medição dos anúncios da Pesquisa Google, só no site e só com o seu ok.</li>
+<li><b>Microsoft</b>: o Clarity no site (só com o seu ok) e a Microsoft Store, que entrega o app no Windows.</li>
+<li><b>GitHub</b> e <b>Backblaze</b>: hospedam o site e os arquivos do app e das atualizações (veem o endereço IP de quem baixa).</li>
+<li><b>ntfy</b>: avisa no nosso celular quando chega uma mensagem de suporte.</li>
 </ul>
-<p>Não vendemos os seus dados.</p>
+<p>Alguns desses serviços guardam dados fora do Brasil. Nesse caso, a transferência segue a LGPD (art. 33), com as garantias contratuais que cada um oferece. Não vendemos os seus dados.</p>
 
-<h2>Por quanto tempo</h2>
-<p>Enquanto a sua conta existir. Os dados de pagamento ficam pelo tempo que a lei exige.</p>
+<h2>Os seus direitos (LGPD, art. 18)</h2>
+<p>Você pode, a qualquer momento e sem custo: saber se tratamos os seus dados e receber uma cópia; corrigir dados errados; pedir para apagar, anonimizar ou bloquear dados desnecessários; levar os dados para outro serviço; saber com quem compartilhamos; retirar um consentimento (por exemplo, parar de receber novidades); e reclamar na Autoridade Nacional de Proteção de Dados (ANPD).</p>
+<ul>
+<li><b>Apagar a conta:</b> no app, em Configurações › Conta › Apagar minha conta. A assinatura é cancelada e os dados da conta saem na hora.</li>
+<li><b>Qualquer outro pedido:</b> mande um e-mail para <a href="mailto:obtura@outlook.com">obtura@outlook.com</a> com o e-mail da sua conta. Respondemos em até 15 dias.</li>
+<li><b>Parar de receber novidades:</b> use o link “descadastrar” no fim de qualquer e-mail.</li>
+</ul>
 
-<h2>Os seus direitos (LGPD)</h2>
-<p>Você pode pedir para ver, corrigir ou apagar os seus dados, e para cancelar a conta, a qualquer momento. É só mandar uma <a href="https://ig.me/m/obturaapp">mensagem no Instagram @obturaapp</a>.</p>
+<h2>Segurança e incidentes</h2>
+<p>As senhas são guardadas cifradas, os acessos ao servidor são limitados e os endereços IP são guardados embaralhados. Se acontecer um incidente de segurança que possa trazer risco ou dano relevante, avisamos você e a ANPD em até 3 dias úteis, como pede a Resolução CD/ANPD nº 15/2024.</p>
+
+<h2>Crianças e adolescentes</h2>
+<p>O Obtura é feito para fotógrafos profissionais e não é destinado a menores de 18 anos. Não coletamos de propósito dados de crianças ou adolescentes; se soubermos que uma conta é de alguém menor de idade sem o consentimento de um dos pais ou responsável, ela é apagada.</p>
+<p>As fotos que você edita podem mostrar crianças, mas elas ficam só no seu computador: o Obtura não as recebe.</p>
+
+<h2>Mudanças nesta política</h2>
+<p>Se mudarmos esta política, a versão e a data no topo mudam e, se a mudança for importante, avisamos no app ou por e-mail antes de valer.</p>
 </main>
+<footer><a href="/">obturaapp.com.br</a> · <a href="/termos/">Termos de uso</a> · <a href="mailto:obtura@outlook.com">obtura@outlook.com</a> · <a href="#cookies" data-cookies>Cookies</a></footer>
+<script src="/consent.js" defer data-so-aviso></script>
 </body>
 </html>
