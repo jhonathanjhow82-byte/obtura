@@ -1,11 +1,16 @@
-/* Cookies e rastreadores do site (LGPD): nada de Meta Pixel, Google Ads ou Microsoft Clarity antes de a pessoa
-   aceitar. A escolha fica no navegador (localStorage "obtura_consent", 12 meses) e pode ser mudada a qualquer hora
-   pelo link "Cookies" do rodapé. Recusar é tão fácil quanto aceitar (mesmo tamanho, mesma tela).
+/* Cookies e rastreadores do site (Meta Pixel, Google Ads, Microsoft Clarity). A escolha fica no navegador
+   (localStorage "obtura_consent", 12 meses) e pode ser mudada a qualquer hora pelo link "Cookies" do rodapé.
+   MODO (decisão do dono, 10/11/2026):
+     - 'barrinha': uma barra fininha embaixo avisa que, navegando, a pessoa concorda; os rastreadores ligam já e
+       "Recusar" desliga (opt-out). Atenção: o guia de cookies da ANPD não aceita "continuar navegando" como
+       consentimento; é o risco que o dono escolheu correr.
+     - 'aviso': o aviso grande com Recusar / Aceitar / Escolher, e nada liga antes do ok (opt-in, o que a ANPD pede).
    Categorias:
      - medicao: Microsoft Clarity (como as pessoas usam a página) e o código fixo do funil no navegador (funil.js);
      - anuncios: Meta Pixel e a tag do Google Ads (medir os anúncios).
    Sem escolha ou com recusa, nenhum desses scripts é carregado e nenhum cookie deles é gravado. */
 (function () {
+  var MODO = 'barrinha';
   var KEY = 'obtura_consent', VERSAO = 1, VALIDADE = 365 * 864e5;
   // data-so-aviso: página sem rastreadores (privacidade, termos): mostra o aviso e guarda a escolha, sem carregar nada
   var SO_AVISO = !!(document.currentScript && document.currentScript.hasAttribute('data-so-aviso'));
@@ -78,7 +83,7 @@
     d.innerHTML =
       '<h2>Cookies</h2>' +
       '<p>Usamos cookies para medir os anúncios (Meta e Google) e entender como o site é usado (Microsoft Clarity). ' +
-      'Só ligamos com o seu ok. <a href="/privacidade/#cookies">Saiba mais</a></p>' +
+      (MODO === 'barrinha' ? 'Escolha o que fica ligado. ' : 'Só ligamos com o seu ok. ') + '<a href="/privacidade/#cookies">Saiba mais</a></p>' +
       '<ul class="ckb-ops">' +
       '<li><label><input type="checkbox" checked disabled> <span><b>Necessários</b>: guardar esta escolha e o código de embaixador do link. Sempre ligados.</span></label></li>' +
       '<li><label><input type="checkbox" id="ckb-med"> <span><b>Medição</b>: Microsoft Clarity (cliques e rolagem, sem o que você digita) e as etapas da visita.</span></label></li>' +
@@ -95,9 +100,8 @@
     if (atual) { med.checked = !!atual.medicao; ads.checked = !!atual.anuncios; d.classList.add('mais'); }
     function fim(c) {
       d.remove();
-      var antes = ler();
-      // quem tinha aceitado e agora recusa: os scripts já carregados só saem ao recarregar a página
-      if (antes && ((antes.medicao && !c.medicao) || (antes.anuncios && !c.anuncios)) && (carregou.medicao || carregou.anuncios)) {
+      // quem recusa algo que já está carregado: os scripts só saem ao recarregar a página
+      if ((carregou.medicao && !c.medicao) || (carregou.anuncios && !c.anuncios)) {
         gravar(c.medicao, c.anuncios); location.reload(); return;
       }
       carregar(gravar(c.medicao, c.anuncios));
@@ -108,13 +112,37 @@
     d.querySelector('#ckb-salvar').onclick = function () { fim({ medicao: med.checked, anuncios: ads.checked }); };
   }
 
+  // a barra fininha do MODO 'barrinha': uma linha, letra pequena, sem cobrir a página
+  var cssBarra = '#ckbar{position:fixed;left:0;right:0;bottom:0;z-index:80;display:flex;align-items:center;justify-content:center;' +
+    'gap:8px;flex-wrap:nowrap;white-space:nowrap;padding:4px 10px calc(6px + env(safe-area-inset-bottom));background:rgba(10,10,12,.92);' +
+    'border-top:1px solid rgba(255,255,255,.1);color:#B2B2BC;font:11px/1.3 Inter,system-ui,-apple-system,sans-serif;text-align:center}' +
+    '#ckbar a,#ckbar button{color:#e6e6ea;font:inherit;background:none;border:0;padding:4px 2px;cursor:pointer;text-decoration:underline}' +
+    '#ckbar button.ok{text-decoration:none;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:2px 10px}' +
+    '#ckbar button:focus-visible,#ckbar a:focus-visible{outline:2px solid #FFCD5A;outline-offset:2px}';
+  function barra() {
+    if (document.getElementById('ckbar')) return;
+    var st = document.createElement('style'); st.textContent = cssBarra; document.head.appendChild(st);
+    var d = document.createElement('div');
+    d.id = 'ckbar'; d.setAttribute('role', 'region'); d.setAttribute('aria-label', 'Cookies');
+    d.innerHTML = '<span>Usamos <a href="/privacidade/#cookies">cookies</a>. Navegando, você concorda.</span>' +
+      '<button type="button" id="ckbar-nao">Recusar</button><button type="button" class="ok" id="ckbar-ok">Ok</button>';
+    document.body.appendChild(d);
+    d.querySelector('#ckbar-ok').onclick = function () { d.remove(); carregar(gravar(true, true)); };
+    d.querySelector('#ckbar-nao').onclick = function () {
+      d.remove(); gravar(false, false);
+      if (carregou.medicao || carregou.anuncios) location.reload();
+    };
+  }
+
   window.obturaConsent = {
     estado: function () { return ler(); },
-    abrir: function () { banner(ler()); }
+    abrir: function () { var b = document.getElementById('ckbar'); if (b) b.remove(); banner(ler() || (MODO === 'barrinha' ? { medicao: true, anuncios: true } : null)); }
   };
   function iniciar() {
     var c = ler();
-    if (c) carregar(c); else banner(null);
+    if (c) carregar(c);
+    else if (MODO === 'barrinha') { carregar({ medicao: true, anuncios: true }); barra(); }
+    else banner(null);
     document.querySelectorAll('[data-cookies]').forEach(function (a) {
       a.addEventListener('click', function (e) { e.preventDefault(); window.obturaConsent.abrir(); });
     });
