@@ -46,6 +46,20 @@
   .compose { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 8px; align-items: flex-end; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); }
   .compose > div { max-width: 760px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; width: 100%; }
   .empty { padding: 40px 16px; text-align: center; color: var(--dim); }
+  .tabs { display: flex; gap: 6px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  .tabs button { background: transparent; color: var(--dim); border: 1px solid var(--line); padding: 6px 14px; font-weight: 500; }
+  .tabs button.on { background: var(--card); color: var(--text); }
+  .summary { padding: 16px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
+  .summary .avg { font-size: 30px; font-weight: 700; }
+  .summary .avg small { font-size: 14px; color: var(--dim); font-weight: 400; margin-left: 6px; }
+  .bar { display: grid; grid-template-columns: 34px 1fr 40px; gap: 8px; align-items: center; font-size: 13px; color: var(--dim); }
+  .bar i { display: block; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #6e28dc, #eb3c8c, #ff823c); }
+  .bar span:nth-child(2) { background: var(--card); border-radius: 4px; overflow: hidden; }
+  .rating { padding: 14px 16px; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+  .rating .stars { color: #eb3c8c; letter-spacing: 2px; font-size: 17px; }
+  .rating .stars .off { color: #3a3542; }
+  .rating .comment { white-space: pre-wrap; word-break: break-word; }
+  .chip { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 999px; background: #6e28dc; color: #fff; margin: 0 4px 4px 0; }
 </style>
 </head>
 <body>
@@ -163,6 +177,71 @@ function showLogin(message) {
   main.append(f);
 }
 
+const REASON_WORDS = { slow: "Lento", error: "Erro ou travou", result: "Cor ou resultado ruim", hard: "Difícil de usar", missing: "Falta algo" };
+
+function tabs(which) {
+  const t = el("div", "tabs");
+  const a = el("button", which === "msgs" ? "on" : "", "Mensagens");
+  const b = el("button", which === "rates" ? "on" : "", "Avaliações");
+  a.onclick = () => showList().catch(failed);
+  b.onclick = () => showRatings().catch(failed);
+  t.append(a, b);
+  return t;
+}
+
+function starsText(n) {
+  const s = el("div", "stars");
+  s.append(document.createTextNode("★".repeat(n)));
+  s.append(el("span", "off", "★".repeat(5 - n)));
+  return s;
+}
+
+async function showRatings() {
+  clearInterval(timer);
+  current = null;
+  history.replaceState(null, "", "#avaliacoes");
+  $("back").hidden = true; $("logout").hidden = false; $("compose").hidden = true;
+  $("title").textContent = "Feedback do Obtura";
+  const v = await ask({ action: "ratings" });
+  main.replaceChildren(tabs("rates"));
+  const sum = v.summary || { count: 0, average: null, byStars: [0, 0, 0, 0, 0] };
+  const box = el("div", "summary");
+  const avg = el("div", "avg", sum.average === null ? "—" : String(sum.average).replace(".", ","));
+  avg.append(el("small", "", sum.count + (sum.count === 1 ? " avaliação" : " avaliações")));
+  box.append(avg);
+  for (let n = 5; n >= 1; n--) {
+    const k = sum.byStars[n - 1] || 0;
+    const row = el("div", "bar");
+    const track = el("span");
+    const fill = el("i"); fill.style.width = (sum.count ? Math.round(k * 100 / sum.count) : 0) + "%";
+    track.append(fill);
+    row.append(el("span", "", n + " ★"), track, el("span", "", String(k)));
+    box.append(row);
+  }
+  main.append(box);
+  if (!v.ratings || v.ratings.length === 0) main.append(el("div", "empty", "Nenhuma avaliação ainda."));
+  for (const r of v.ratings || []) {
+    const d = el("div", "rating");
+    const top = el("div", "top");
+    top.style.display = "flex"; top.style.gap = "8px"; top.style.alignItems = "baseline";
+    const st = starsText(Math.max(1, Math.min(5, r.stars | 0)));
+    st.style.flex = "1";
+    top.append(st, el("span", "meta", when(r.createdAt)));
+    d.append(top);
+    const who = el("div", "meta", (r.name || "Sem nome") + (r.email ? " · " + r.email : "") + (r.verified ? "" : " (sem conta)"));
+    d.append(who);
+    if (r.reasons && r.reasons.length) {
+      const c = el("div");
+      for (const x of r.reasons) c.append(el("span", "chip", REASON_WORDS[x] || x));
+      d.append(c);
+    }
+    if (r.comment) d.append(el("div", "comment", r.comment));
+    if (r.app) d.append(el("div", "meta", "Obtura " + (r.app.version || "") + (r.app.build ? " (build " + r.app.build + ")" : "") + " · " + (r.app.os || "")));
+    main.append(d);
+  }
+  timer = setInterval(() => { if (!document.hidden && location.hash === "#avaliacoes") showRatings().catch(failed); }, 60000);
+}
+
 async function showList() {
   clearInterval(timer);
   current = null;
@@ -171,7 +250,7 @@ async function showList() {
   $("title").textContent = "Feedback do Obtura";
   const v = await ask({ action: "threads" });
   if (current !== null) return;
-  main.replaceChildren();
+  main.replaceChildren(tabs("msgs"));
   const unread = v.threads.filter((t) => t.unread).length;
   document.title = (unread ? "(" + unread + ") " : "") + "Obtura · Feedback";
   if (v.threads.length === 0) main.append(el("div", "empty", "Nenhuma mensagem ainda."));
@@ -259,7 +338,7 @@ $("logout").onclick = () => { keep(null); showLogin(); };
 try { session = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (_) { session = null; }
 const wanted = Number((location.hash.match(/^#t=(\d+)$/) || [])[1] || 0);
 if (!session) showLogin();
-else (wanted ? openThread(wanted) : showList()).catch(failed);
+else (wanted ? openThread(wanted) : location.hash === "#avaliacoes" ? showRatings() : showList()).catch(failed);
 </script>
 </body>
 </html>
