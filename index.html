@@ -745,6 +745,17 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   // medidas lidas só quando a tela muda de tamanho (ler layout a cada quadro trava o scroll)
   let G = {};
   function measure(){
+    // celular: as seções fixas deixavam um vão preto enorme entre o topo e o antes/depois e entre ele e os recursos.
+    // A seção seguinte sobe até ficar a GAP px do fim da anterior (medido nas telas fixas, que têm a altura da tela).
+    if (innerWidth < 860){
+      ba.style.marginTop = feat.style.marginTop = '0px';
+      const GAP = 64, lift = still ? 0 : (heroTxt.offsetHeight + 34) * 0.92;
+      const winEnd = heroWin.offsetTop + heroWin.offsetHeight - lift;
+      const baTxt = ba.querySelector('.ba-txt'), stage = feat.querySelector('.stage');
+      ba.style.marginTop = Math.min(0, Math.round(GAP - (hero.querySelector('.stick').offsetHeight - winEnd) - baTxt.offsetTop)) + 'px';
+      const cmpEnd = cmp.offsetTop + cmp.offsetHeight;
+      feat.style.marginTop = Math.min(0, Math.round(GAP - (ba.querySelector('.stick').offsetHeight - cmpEnd) - stage.offsetTop)) + 'px';
+    } else ba.style.marginTop = feat.style.marginTop = '';
     const sec = el => ({top: el.offsetTop, span: Math.max(1, el.offsetHeight - innerHeight)});
     const sh = document.getElementById('shots');
     G = { vh: innerHeight, max: Math.max(1, document.documentElement.scrollHeight - innerHeight), mob: innerWidth < 860,
