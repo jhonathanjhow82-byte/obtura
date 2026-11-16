@@ -282,6 +282,23 @@ function bubble(m) {
     };
     d.append(b);
   }
+  if (m.hasLog) {
+    const b = el("button", "quiet", "Baixar o registro do app");
+    b.onclick = async () => {
+      b.disabled = true;
+      try {
+        const v = await ask({ action: "log", messageId: m.id });
+        if (typeof v.text !== "string") throw new Error("Registro inválido");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([v.text], { type: "text/plain;charset=utf-8" }));
+        a.download = "registro-obtura-" + m.id + ".log";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      } catch (e) { failed(e); }
+      b.disabled = false;
+    };
+    d.append(b);
+  }
   d.append(el("div", "meta", when(m.createdAt)));
   return d;
 }
