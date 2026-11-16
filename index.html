@@ -477,6 +477,7 @@ footer a{color:var(--branco);font-weight:500}
     </a>
   </div>
   <p class="note rv">O Obtura é para computador: baixe no seu Mac ou PC.</p>
+  <p class="note rv" id="winDireto">Não consegue entrar na Microsoft Store? <a href="https://github.com/jhonathanjhow82-byte/obtura/releases/latest/download/Obtura-teste-Windows.zip" id="dlWinDireto" download style="color:#fff">Baixe direto para Windows</a> (sem a Store).</p>
   <div class="inst rv" id="instalar">
     <div class="card">
       <h3>Instalar no Mac</h3>
@@ -490,9 +491,10 @@ footer a{color:var(--branco);font-weight:500}
       <ol>
         <li>Na Microsoft Store, clique em <b>"Obter"</b> ou <b>"Instalar"</b>.</li>
         <li>Abra o Obtura pelo menu Iniciar e clique em <b>"Criar conta"</b> para começar o teste grátis. Pronto!</li>
+        <li>Sem a Store: descompacte a pasta <b>Obtura</b> (por exemplo, em Documentos) e abra <b>Obtura.exe</b>. Se aparecer "O Windows protegeu o computador", clique em <b>"Mais informações"</b> e em <b>"Executar assim mesmo"</b>.</li>
       </ol>
     </div>
-    <p class="ok">O Obtura é verificado pela Apple e pela Microsoft. Depois, ele se atualiza sozinho.</p>
+    <p class="ok">O Obtura é verificado pela Apple e pela Microsoft Store. Depois, ele se atualiza sozinho.</p>
   </div>
   <p class="price rv">Depois do teste: <b>R$ 29,90/mês</b> ou <b>R$ 299/ano</b> (2 meses grátis). Pix ou cartão.</p>
   <div class="help rv">
@@ -545,7 +547,9 @@ footer a{color:var(--branco);font-weight:500}
 /* ==== LINKS DE DOWNLOAD: cole aqui os links dos instaladores ==== */
 const DOWNLOADS = {
   mac: "https://github.com/jhonathanjhow82-byte/obtura/releases/latest/download/Obtura-teste-Mac.dmg",
-  windows: "https://apps.microsoft.com/detail/9P71FGQ9JVJ6"
+  windows: "https://apps.microsoft.com/detail/9P71FGQ9JVJ6",
+  // para quem não consegue entrar na Microsoft Store: o mesmo app, em zip, que se atualiza sozinho
+  windows_direto: "https://github.com/jhonathanjhow82-byte/obtura/releases/latest/download/Obtura-teste-Windows.zip"
 };
 const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: direct do Instagram
 
@@ -666,6 +670,15 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
     tag('baixou', os); step('download', os);
     try { window.gtag && gtag('event', 'conversion', {send_to: 'AW-18558939916/twg9CMbU8LIdEIzmy5FF'}); } catch(e){}
   }));
+  // Windows sem a Store (16/11/2026: fotógrafo que não conseguia entrar na loja da Microsoft)
+  const direto = $('#dlWinDireto');
+  if (isMobile) $('#winDireto').hidden = true;
+  else direto.addEventListener('click', () => {
+    track('Lead', {content_name: 'download_windows_direto', content_category: device});
+    track('Download', {os: 'windows_direto', dispositivo: device}, true);
+    tag('baixou', 'windows_direto'); step('download', 'windows_direto');
+    try { window.gtag && gtag('event', 'conversion', {send_to: 'AW-18558939916/twg9CMbU8LIdEIzmy5FF'}); } catch(e){}
+  });
   document.querySelectorAll('a[href="#baixar"]').forEach(a => a.addEventListener('click', () =>
     { track('ClicouBaixarTopo', {dispositivo: device}, true); step('clicou_cta'); }));
   document.querySelectorAll('a[href^="https://ig.me/"]').forEach(a => a.addEventListener('click', () =>
