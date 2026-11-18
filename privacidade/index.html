@@ -42,7 +42,7 @@ footer{max-width:760px;margin:0 auto;padding:0 16px 40px;color:var(--cinza);font
 <h2>Resumo</h2>
 <ul>
 <li>As suas fotos ficam no seu computador. O Obtura escolhe, edita e usa a IA no próprio computador, sem enviar as fotos para nenhum servidor.</li>
-<li>Para treinar a IA do Obtura, guardamos números sobre como você escolhe e edita (nunca as fotos). Isso vale enquanto a opção estiver ligada, e você desliga quando quiser em Configurações › Conta. <a href="#treino-ia">Veja como funciona</a>.</li>
+<li>Para treinar a IA do Obtura, guardamos números sobre como você escolhe e edita e, de alguns fotógrafos, cópias pequenas de algumas fotos (nunca os arquivos RAW). Isso vale enquanto a opção estiver ligada, e você desliga quando quiser em Configurações › Conta. <a href="#treino-ia">Veja como funciona</a>.</li>
 <li>Para a conta e a assinatura guardamos só o necessário: nome, e-mail, WhatsApp e os dados do pagamento.</li>
 <li>No site usamos cookies da Meta, do Google e do Microsoft Clarity para medir os anúncios e melhorar a página. Você pode recusar a qualquer hora.</li>
 <li>Você pode pedir para ver, corrigir ou apagar os seus dados pelo e-mail <a href="mailto:obtura@outlook.com">obtura@outlook.com</a> ou apagar a conta no próprio app.</li>
@@ -62,7 +62,7 @@ footer{max-width:760px;margin:0 auto;padding:0 16px 40px;color:var(--cinza);font
 <tr><td>Código embaralhado do computador (SHA-256, que não permite saber qual é o computador)</td><td>Dar um só teste grátis por computador e contar as instalações (legítimo interesse: evitar fraude)</td><td>Até 2 anos depois do último uso. Fica mesmo se a conta for apagada, sem ligação com você.</td></tr>
 <tr><td>Etapas de uso do app (abriu, importou, usou a seleção com IA, removeu um objeto, revelou, exportou, abriu os planos, assinou), no máximo uma vez por dia cada, com a quantidade aproximada de fotos</td><td>Entender onde o app ajuda e onde as pessoas travam (legítimo interesse). Nunca as fotos, os nomes dos arquivos ou o que elas mostram.</td><td>Até 2 anos.</td></tr>
 <tr><td>Mensagens do chat de suporte do app (e a captura de tela, se você anexar)</td><td>Responder e resolver o seu problema (execução do contrato)</td><td>Enquanto a conta existir. Saem ao apagar a conta.</td></tr>
-<tr><td>Dados de uso para treinar a IA: as escolhas da seleção das melhores fotos, os ajustes da edição e o estilo usado, só como números (veja <a href="#treino-ia">Treino da inteligência artificial</a>)</td><td>Melhorar a seleção e a edição automática do Obtura (consentimento, dado ao aceitar os Termos de Uso, que você retira a qualquer momento)</td><td>Até 5 anos depois do envio, ou até você pedir para apagar. Saem ao apagar a conta.</td></tr>
+<tr><td>Dados de uso para treinar a IA: as escolhas da seleção das melhores fotos, os ajustes da edição e o estilo usado, como números, e, de alguns fotógrafos, cópias pequenas de algumas fotos, a original e a editada (veja <a href="#treino-ia">Treino da inteligência artificial</a>)</td><td>Melhorar a seleção e a edição automática do Obtura (consentimento, dado ao aceitar os Termos de Uso, que você retira a qualquer momento)</td><td>Números: até 5 anos depois do envio. Cópias pequenas das fotos: até 2 anos. Ou até você pedir para apagar. Saem ao apagar a conta.</td></tr>
 <tr><td>Cupom ou convite usado no cadastro</td><td>Dar o desconto e pagar o embaixador ou o amigo que indicou (execução do contrato)</td><td>Enquanto a conta existir; o registro do uso do cupom fica para as contas do embaixador.</td></tr>
 <tr><td>E-mail digitado no site para receber o link</td><td>Mandar o link para baixar no computador. Novidades só se você marcar a caixa (consentimento).</td><td>Até 6 meses, se você não criar a conta. Todo e-mail tem o link para descadastrar e apagar.</td></tr>
 <tr><td>Endereço IP, sempre embaralhado com chave</td><td>Limitar abusos (muitos cadastros ou envios seguidos) (legítimo interesse: segurança)</td><td>Até 1 dia.</td></tr>
@@ -71,22 +71,23 @@ footer{max-width:760px;margin:0 auto;padding:0 16px 40px;color:var(--cinza);font
 <!-- DECIDIR: os prazos acima são a proposta da auditoria; confirme se valem para você antes de publicar. -->
 
 <h2 id="treino-ia">Treino da inteligência artificial</h2>
-<p>A IA do Obtura aprende com fotógrafos de verdade. Os <a href="/termos/">Termos de Uso</a>, que você aceita ao criar a conta, têm uma cláusula em que você autoriza o Obtura a usar as fotos que editar, como editou e quais fotos escolheu ou tirou para treinar a inteligência artificial do Obtura. Na prática, as fotos não saem do seu computador: o que vai para o nosso servidor são só números tirados delas.</p>
+<p>A IA do Obtura aprende com fotógrafos de verdade. Os <a href="/termos/">Termos de Uso</a>, que você aceita ao criar a conta, têm uma cláusula em que você autoriza o Obtura a usar as fotos que editar, como editou e quais fotos escolheu ou tirou para treinar a inteligência artificial do Obtura. Na prática, o que vai para o nosso servidor são números tirados das fotos e, de alguns fotógrafos escolhidos pelo Obtura, cópias pequenas de algumas fotos. Os arquivos originais (RAW) nunca saem do seu computador.</p>
 <p><b>O que é enviado</b></p>
 <ul>
 <li><b>Seleção das melhores fotos:</b> quando você confirma a revisão, quais fotos ficaram e quais saíram, o motivo que a IA deu, se você mudou a decisão dela, a nota de confiança da IA, a nota de emoção de cada foto e os números que a IA usa para decidir (medidas como nitidez, olhos abertos, sorriso e enquadramento, e uma descrição da imagem em números que não permite refazer a foto).</li>
 <li><b>Edição e estilo:</b> quando você exporta, os ajustes finais de cada foto (só o que foi mudado, como exposição, cor e contraste), o nome do preset usado e se o Meu Estilo editou a foto.</li>
+<li><b>Cópias pequenas das fotos (só de alguns fotógrafos escolhidos pelo Obtura):</b> de cada seleção e de cada exportação, uma amostra de até 30 fotos, em JPEG pequeno (até 1024 pixels no lado maior e cerca de 200 KB), sem dados da câmera nem localização. Da seleção vão fotos que ficaram e que saíram; da exportação vão a foto original, como a câmera fez, e a sua versão editada. Elas ficam guardadas num servidor fechado, que só o Obtura acessa, e servem só para treinar e testar a IA.</li>
 <li>Junto vão um código para cada foto e um código embaralhado do trabalho, que servem só para ligar a seleção à exportação do mesmo trabalho.</li>
 </ul>
-<p><b>O que não é enviado:</b> as fotos, miniaturas, os nomes dos arquivos e das pastas, os nomes dos clientes, os rostos e as pessoas reconhecidas, nem a localização das fotos.</p>
+<p><b>O que não é enviado:</b> os arquivos originais (RAW) e as fotos em tamanho grande, as fotos dos fotógrafos que não foram escolhidos, os nomes dos arquivos e das pastas, os nomes dos clientes, os rostos e as pessoas reconhecidas, nem a localização das fotos.</p>
 <p><b>Para quê:</b> treinar e testar a IA do Obtura, para a seleção das melhores fotos e a edição automática acertarem mais o gosto dos fotógrafos. Não vendemos esses dados e eles não são usados em anúncios.</p>
-<p><b>Por quanto tempo:</b> até 5 anos depois do envio, ou até você pedir para apagar. Ao apagar a conta, tudo sai na hora.</p>
-<p><b>Como desligar:</b> em Configurações › Conta, desmarque “Autorizo o Obtura a usar as fotos que eu editar…”. A coleta para na hora e o que ainda não tinha sido enviado é descartado no seu computador. Você pode ligar de novo quando quiser. Para apagar o que já foi enviado, escreva para <a href="mailto:obtura@outlook.com">obtura@outlook.com</a> com o e-mail da sua conta.</p>
+<p><b>Por quanto tempo:</b> os números, até 5 anos depois do envio; as cópias pequenas das fotos, até 2 anos. Ou até você pedir para apagar. Ao apagar a conta, tudo sai na hora.</p>
+<p><b>Como desligar:</b> em Configurações › Conta, desmarque “Autorizo o Obtura a usar as fotos que eu editar…”. A coleta para na hora e o que ainda não tinha sido enviado, números e fotos, é descartado no seu computador. Você pode ligar de novo quando quiser. Para apagar o que já foi enviado, escreva para <a href="mailto:obtura@outlook.com">obtura@outlook.com</a> com o e-mail da sua conta.</p>
 <p>Guardamos a data e a versão do texto que você aceitou e cada vez que a opção foi ligada ou desligada.</p>
 
 <h2>O que não coletamos</h2>
 <ul>
-<li>As suas fotos, edições e catálogos. Eles ficam no seu computador (para o treino da IA vão só os números descritos acima).</li>
+<li>Os seus arquivos originais, edições e catálogos. Eles ficam no seu computador (para o treino da IA vão só os números e as cópias pequenas descritos acima).</li>
 <li>Os rostos e as pessoas que a IA reconhece. Isso também fica só no seu computador.</li>
 <li>O número do seu cartão: ele é digitado direto na página segura da plataforma de pagamento.</li>
 </ul>
