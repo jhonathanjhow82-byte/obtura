@@ -477,7 +477,7 @@ footer a{color:var(--branco);font-weight:500}
     </a>
   </div>
   <p class="note rv">O Obtura é para computador: baixe no seu Mac ou PC.</p>
-  <p class="note rv" id="winDireto">Não consegue entrar na Microsoft Store? <a href="https://github.com/jhonathanjhow82-byte/obtura/releases/latest/download/Obtura-teste-Windows.zip" id="dlWinDireto" download style="color:#fff">Baixe direto para Windows</a> (sem a Store).</p>
+  <p class="note rv" id="winDireto">A Microsoft Store não abriu ou pediu para entrar na conta? <a href="https://github.com/jhonathanjhow82-byte/obtura/releases/latest/download/Obtura-teste-Windows.zip" id="dlWinDireto" download style="color:#fff">Baixe direto para Windows</a> (sem a Store).</p>
   <div class="inst rv" id="instalar">
     <div class="card">
       <h3>Instalar no Mac</h3>
@@ -650,7 +650,11 @@ const FALLBACK = "https://ig.me/m/obturaapp"; // enquanto não houver link: dire
   document.querySelectorAll('.dl a').forEach(a => {
     if (isMobile) a.addEventListener('click', e => { e.preventDefault(); openSheet(a.dataset.os); });
     const url = DOWNLOADS[a.dataset.os];
-    if (url) { a.href = url; a.setAttribute('download',''); }
+    // no Windows, o botão abre o aplicativo Microsoft Store (já com a conta do Windows): a página da loja no
+    // navegador pede para entrar na conta e confirmar a idade (classificação 14 anos no Brasil por ter compra no
+    // app) e deixa o Baixar cinza (21/11/2026, terceira cliente que achou que não havia versão para Windows)
+    if (url && a.dataset.os === 'windows' && !isMobile && /Windows/.test(ua)) a.href = 'ms-windows-store://pdp/?productid=9P71FGQ9JVJ6&mode=mini';
+    else if (url) { a.href = url; a.setAttribute('download',''); }
     else { a.href = FALLBACK; a.target = '_blank'; a.rel = 'noopener';
       a.addEventListener('click', () => toast('Chama a gente no direct do @obturaapp que mandamos o acesso.')); }
   });

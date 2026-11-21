@@ -52,7 +52,7 @@ small a,p a{color:var(--branco)}
       <li>Crie sua conta no app e comece o teste grátis.</li>
     </ol>
     <div id="winDireto" style="margin:26px auto 0;max-width:460px" hidden>
-      <p style="margin:0 auto 12px">Não consegue entrar na Microsoft Store? Baixe direto, sem a Store:</p>
+      <p style="margin:0 auto 12px">A Microsoft Store não abriu ou pediu para entrar na conta? Baixe direto, sem a Store:</p>
       <a class="btn ghost" id="baixarDireto" href="https://github.com/jhonathanjhow82-byte/obtura/releases/latest/download/Obtura-teste-Windows.zip" download>Baixar direto para Windows</a>
       <ol style="margin:16px auto 0">
         <li>Descompacte a pasta <b>Obtura</b> (por exemplo, em Documentos).</li>
@@ -109,6 +109,8 @@ small a,p a{color:var(--branco)}
   }
   const a = document.getElementById('baixar');
   a.href = DOWNLOADS[os];
+  // no Windows, o aplicativo Microsoft Store (a página da loja no navegador pede conta e idade: ver index.html)
+  if (os === 'windows' && f.os === 'windows' && !f.celular) a.href = 'ms-windows-store://pdp/?productid=9P71FGQ9JVJ6&mode=mini';
   if (os === 'windows') a.textContent = 'Baixar na Microsoft Store';
   if (os === 'mac') a.setAttribute('download', '');
   let counted = false;
